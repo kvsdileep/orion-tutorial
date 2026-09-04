@@ -48,11 +48,13 @@ class Scripted:
 
 @pytest.fixture
 def ws_dir(tmp_path: Path) -> Path:
-    (tmp_path / "app.py").write_text(
+    ws = tmp_path / "workspace"
+    ws.mkdir()
+    (ws / "app.py").write_text(
         'import streamlit as st\nfrom chat import stream_response\n\ndef main():\n    st.title("Chat")\n'
     )
-    (tmp_path / "chat.py").write_text(
+    (ws / "chat.py").write_text(
         "def stream_response(client, messages):\n    for chunk in client.stream(messages):\n        yield chunk\n"
     )
-    (tmp_path / "config.py").write_text('PAGE_TITLE = "My ChatBot"\nMODEL = "openai/gpt-4o-mini"\n')
-    return tmp_path
+    (ws / "config.py").write_text('PAGE_TITLE = "My ChatBot"\nMODEL = "openai/gpt-4o-mini"\n')
+    return ws
