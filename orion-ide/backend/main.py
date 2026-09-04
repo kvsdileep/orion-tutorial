@@ -11,6 +11,7 @@ from routers.agent import router as agent_router
 from routers.chat import router as chat_router
 from routers.files import router as files_router
 from routers.rules import router as rules_router
+from routers.skills import router as skills_router
 from routers.terminal import router as terminal_router
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ app.include_router(files_router, prefix="/api")
 app.include_router(agent_router, prefix="/api")
 app.include_router(terminal_router, prefix="/api")
 app.include_router(rules_router, prefix="/api")
+app.include_router(skills_router, prefix="/api")
 
 models_router = APIRouter(tags=["models"])
 

@@ -57,3 +57,35 @@ class ModelInfo(BaseModel):
     id: str
     name: str
     description: str = ""
+
+
+class RuleSummary(BaseModel):
+    name: str
+    source: str
+    description: str = ""
+    globs: list[str] = []
+    always_apply: bool = False
+
+
+class RuleContent(BaseModel):
+    name: str
+    content: str
+
+
+class SkillSummary(BaseModel):
+    name: str
+    description: str = ""
+    paths: list[str] = []
+    model_invocable: bool = True
+    source: str
+
+
+class SkillContent(BaseModel):
+    name: str
+    content: str
+
+
+class NewSkillRequest(BaseModel):
+    name: str
+    description: str
+
