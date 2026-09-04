@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { ArrowRight } from "lucide-react";
 import { chapters } from "@/lib/registry";
 
@@ -40,42 +41,57 @@ export default function CurriculumPage() {
 
       <div className="space-y-12">
         {lessonGroups.map((group) => (
-          <section key={group.lesson}>
-            <div className="mb-5">
-              <span className="font-code text-primary-light text-label-caps uppercase tracking-widest">
-                {group.lesson}
-              </span>
-              <h2 className="font-headline text-headline-md text-ink mt-2">
-                {group.title}
-              </h2>
-              <p className="font-body text-sm text-gray2 mt-2">
-                {group.description}
-              </p>
-            </div>
+          <Fragment key={group.lesson}>
+            <section>
+              <div className="mb-5">
+                <span className="font-code text-primary-light text-label-caps uppercase tracking-widest">
+                  {group.lesson}
+                </span>
+                <h2 className="font-headline text-headline-md text-ink mt-2">
+                  {group.title}
+                </h2>
+                <p className="font-body text-sm text-gray2 mt-2">
+                  {group.description}
+                </p>
+              </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {group.chapters.map((ch) => (
-                <Link
-                  key={ch.slug}
-                  href={`/curriculum/${ch.slug}`}
-                  className="group bg-surface border border-hairline rounded-lg p-6 hover:border-primary/40 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="font-code text-primary-light text-xs font-bold">
-                      {String(ch.number).padStart(2, "0")}
-                    </span>
-                    <ArrowRight className="w-4 h-4 text-gray3 group-hover:text-primary-light transition-colors" />
-                  </div>
-                  <h3 className="font-headline text-headline-sm text-ink mb-2">
-                    {ch.title}
-                  </h3>
-                  <p className="font-body text-sm text-gray2 line-clamp-3">
-                    {ch.subtitle}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {group.chapters.map((ch) => (
+                  <Link
+                    key={ch.slug}
+                    href={`/curriculum/${ch.slug}`}
+                    className="group bg-surface border border-hairline rounded-lg p-6 hover:border-primary/40 transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="font-code text-primary-light text-xs font-bold">
+                        {String(ch.number).padStart(2, "0")}
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-gray3 group-hover:text-primary-light transition-colors" />
+                    </div>
+                    <h3 className="font-headline text-headline-sm text-ink mb-2">
+                      {ch.title}
+                    </h3>
+                    <p className="font-body text-sm text-gray2 line-clamp-3">
+                      {ch.subtitle}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+            {group.lesson === "Lesson 2" && (
+              <section className="bg-surface border border-hairline rounded-lg p-6">
+                <span className="font-code text-primary-light text-label-caps uppercase tracking-widest">Between the lessons</span>
+                <h2 className="font-headline text-headline-sm text-ink mt-2">Rules, skills, and MCP</h2>
+                <p className="font-body text-sm text-gray2 mt-2 max-w-3xl">
+                  Three files shape the agent without touching its code. Rules in .cursor/rules apply by path. Skills in .cursor/skills load on demand. An MCP server in .cursor/mcp.json adds tools the agent did not ship with. Cursor reads the same three.
+                </p>
+                <div className="flex gap-3 mt-4">
+                  <Link href="/curriculum/dynamic-rules" className="font-code text-sm text-primary-light hover:text-ink">Rules & skills →</Link>
+                  <Link href="/curriculum/orchestrator-state" className="font-code text-sm text-primary-light hover:text-ink">Toolkit & MCP →</Link>
+                </div>
+              </section>
+            )}
+          </Fragment>
         ))}
       </div>
     </div>

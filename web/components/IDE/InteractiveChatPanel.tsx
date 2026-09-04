@@ -284,8 +284,8 @@ export function InteractiveChatPanel({
             label="CODING RULES"
             icon={<Shield className="w-4 h-4 text-primary" />}
             options={[
-              { id: "no_rules", label: "No Rules" },
-              { id: "strict", label: "Strict Rules" },
+              { id: "no_rules", label: "No rules" },
+              { id: "strict", label: "tests.mdc" },
             ]}
             selected={selectedToggle}
             onSelect={setSelectedToggle}
