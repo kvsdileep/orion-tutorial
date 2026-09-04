@@ -18,7 +18,8 @@ Rebuild the Day 13 "Build an AI Coding Agent" material so that:
 - Delivery machine has uv but no conda and no Docker. The project is a uv project. The sandbox is a local jail, with a Docker backend left as a stub.
 - Every SHOW line in the instructor script that names a notebook cell (for example "NB1 C3") must still resolve to one runnable cell. Cell numbers are preserved as tags.
 - The web app at orion-tutorial.vercel.app keeps its 18 chapters and URLs. Only text and code strings change.
-- Learners get Colab links. Notebooks are generated from the Python source, never edited by hand.
+- Learners get the notebooks. They are generated from the Python source, committed, and never edited by hand. A Colab link is only a URL to one of those files on GitHub, so the web app can offer one per chapter at no extra cost.
+- Version 2 of the curriculum site ships from Dileep's fork (github.com/kvsdileep/orion-tutorial) on Dileep's Vercel account. Dileep does the Vercel import from Cursor; the repo carries everything the import needs.
 - The frontend build of the Orion IDE is not taught. The transcript shows Ishan spent about five minutes at beat 58 describing his process and withheld the code. IDE changes are demo chrome and stay small.
 
 ## 2. Repository layout
@@ -194,6 +195,13 @@ Chapters keep their slugs and numbers. Text and code strings change for:
 | ch15 | Multi-Agent: Planner, Coder, Reviewer | Agent Mode |
 | ch16 | Human-in-the-Loop with Tests | Agent Mode |
 
+Site-wide changes that make it v2:
+
+- Home page and header show "v2" and a one-line "what changed" note linking to `lessons/README.md`.
+- Every chapter page gets two links under the code panel: "Open in Colab" (`https://colab.research.google.com/github/kvsdileep/orion-tutorial/blob/main/notebooks/<file>.ipynb`) and "View lesson source" (the lesson file on GitHub). Both are built from the chapter's `lessonFile` field, a new `ChapterDef` property.
+- The curriculum page adds a short "Rules, skills, and MCP" card between Notebook 02 and Notebook 03 that links to ch11 and ch14.
+- The playground page's code sample is replaced by the new orchestrator wiring from `orion_agent/graphs/orchestrator.py`.
+
 `scripts/sync_web_chapters.py` reads each lesson file, concatenates the cells marked `web`, and writes them into the chapter's `backendCode` field between `/* lesson:begin */` and `/* lesson:end */` markers. Intro and takeaway prose and the canned demo outputs stay hand-written. `npm run lint` and `npm run build` must pass after the sync.
 
 ## 10. Testing
@@ -221,13 +229,21 @@ All tests run offline with a `StubChatModel` that returns scripted responses, in
 4. Move `Notebooks/orion` to `orion-ide/`, rewire the backend, add the two routers and the two panels.
 5. Update the seven web chapters, run the sync script, build.
 6. Delete `Notebooks/`. Generate `notebooks/`. Update `README.md`.
-7. Rewrite instructor script beats 17, 25, 32, 38, 39, 42 to 47, and 58 to point at the new cells. This is a separate deliverable after the code is reviewed.
+7. Push `reframe-python` to origin. After Dileep's review, merge to `main` on the fork so the Colab links and the Vercel production deploy both point at `main`.
+8. Rewrite instructor script beats 17, 25, 32, 38, 39, 42 to 47, and 58 to point at the new cells. This is a separate deliverable after the code is reviewed.
+
+### Deployment
+
+- Origin is `kvsdileep/orion-tutorial`, a public fork of `ishandutta0098/orion-tutorial` with only `main` on the remote today. Ishan's upstream stays untouched.
+- Vercel: Dileep imports the fork as a new project from Cursor with root directory `web`, framework Next.js, no environment variables (the site is static fixtures). Suggested project name `orion-tutorial-v2`; the final URL is whatever Vercel assigns. Production branch `main`; every push to `reframe-python` gets a preview URL for review before merge.
+- `web/README.md` documents the import settings so the deploy is reproducible.
 
 ## 12. Out of scope
 
 - Docker or E2B sandbox implementation. The stub and the warning cell are in scope.
 - Any change to lesson order or timing. The improvement report's three-block format is a delivery decision, not a code change.
 - Sharing the Orion IDE with learners. Ishan withheld it; whether to publish it after the hackathon is Dileep's call.
+- Deploying the Orion IDE. It runs locally for the demo; only the curriculum site deploys.
 - Tavily or other search providers. `mcp.py` takes a server map, so adding one later is configuration.
 
 ## 13. Decisions taken in this spec
