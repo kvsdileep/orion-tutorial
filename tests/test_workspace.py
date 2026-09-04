@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import pytest
@@ -52,6 +53,7 @@ def test_snapshot_and_reset(ws_dir, tmp_path):
     snap = ws.snapshot()
     assert (snap / "config.py").read_text() == ws.read("config.py")
     assert snap != ws.root
+    shutil.rmtree(snap, ignore_errors=True)
 
     pristine = tmp_path / "pristine"
     pristine.mkdir()
