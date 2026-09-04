@@ -1,80 +1,32 @@
-# Orion Tutorial
+# Orion
 
-An interactive tutorial series for building AI coding agents with LangChain and LangGraph — presented as a Cursor-like IDE experience in the browser.
+Build an AI coding agent with LangChain and LangGraph, one capability at a time: tools, a self-correcting loop, then a planner, a reviewer, a human gate, and parallel coders, all working on a small Streamlit app.
 
-**Live:** https://orion-tutorial.vercel.app/
+**Site:** the curriculum companion (URL in `web/README.md` once deployed).
 
----
+## What is here
 
-## What's Inside
-
-- **Notebooks/** — Jupyter notebooks with all Python code for each tutorial
-- **web/** — Next.js 15 web app with an IDE-style UI for exploring chapters
-
-The web app renders each tutorial chapter as a full-viewport code editor (dark IDE theme, file explorer, AI assistant panel) matching the design from the Stitch Orion project.
-
-### Notebooks covered
-
-| Notebook | Topic |
-|----------|-------|
-| 01 | Code Generator with Tools (ch01–ch07) |
-| 02 | Self-Correcting Code Agent |
-
----
+| Path | What |
+|---|---|
+| `src/orion_agent/` | The agent: workspace jail, sandbox, tools, rules, skills, MCP, search, and the LangGraph graphs |
+| `lessons/` | Eighteen Python files with `# %%` cells, taught live from Cursor |
+| `sample_project/` | The Streamlit chatbot the agent modifies; copied into `workspace/` by `orion reset` |
+| `.cursor/rules/`, `.cursor/skills/`, `AGENTS.md`, `DESIGN.md` | The rules and skills the agent (and Cursor) read |
+| `orion-ide/` | A FastAPI + React IDE that runs the same agent |
+| `web/` | The Next.js curriculum site |
+| `tests/` | Offline tests against a stub model |
 
 ## Setup
 
-### Prerequisites
-
-- Node.js 20+
-- Python 3.11+ (for running notebooks)
-
-### Web App
-
 ```bash
-cd web
-npm install
-npm run dev
+uv sync
+cp .env.example .env   # add OPENROUTER_API_KEY
+uv run orion reset
+uv run pytest
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-### Notebooks
-
-```bash
-pip install langchain langchain-openai langgraph python-dotenv
-```
-
-Create a `.env` file in the repo root:
-
-```
-OPENROUTER_API_KEY=your_key_here
-```
-
-Then open any notebook in the `Notebooks/` directory:
-
-```bash
-jupyter lab Notebooks/01_code_generator_with_tools.ipynb
-```
-
----
-
-## Web App Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server at localhost:3000 |
-| `npm run build` | Production build |
-| `npm run start` | Serve production build |
-| `npm run lint` | Run ESLint |
-
----
+Then open `lessons/README.md`.
 
 ## Stack
 
-- **Next.js 15** — App Router, static generation
-- **React 19** — UI
-- **Tailwind CSS** — Styling with custom Orion design tokens
-- **TypeScript** — Full type safety
-- **LangChain / LangGraph** — Agent framework (notebooks)
-- **OpenRouter** — LLM gateway
+Python 3.13 with uv. langchain 1.x, langgraph 1.x, langchain-mcp-adapters, pydantic 2. OpenRouter for models. Parallel Search MCP for web research. Next.js 15 and React 19 for the site.
