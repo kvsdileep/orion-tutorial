@@ -1694,7 +1694,7 @@ from orion_agent.workspace import Workspace
 
 
 def test_search_codebase_ranks_files_by_hits(ws_dir):
-    out = search_codebase(Workspace(ws_dir), "streaming chat response")
+    out = search_codebase(Workspace(ws_dir), "yield chunk stream")
     assert out.index("--- chat.py") < out.index("--- app.py")
     assert "2: def stream_response" in out
 
