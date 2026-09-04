@@ -6,6 +6,7 @@ import ActivityBar from './ActivityBar'
 import FileExplorer from './FileExplorer'
 import AgentPanel from './AgentPanel'
 import RulesEditor from './RulesEditor'
+import SkillsPanel from './SkillsPanel'
 import TimeTravel from './TimeTravel'
 import EditorTabs from './EditorTabs'
 import CodeEditor from './CodeEditor'
@@ -19,6 +20,7 @@ function SidebarContent() {
     case 'files': return <FileExplorer />
     case 'agent': return <AgentPanel />
     case 'rules': return <RulesEditor />
+    case 'skills': return <SkillsPanel />
     case 'timetravel': return <TimeTravel />
   }
 }
@@ -65,7 +67,7 @@ export default function Layout() {
 
               {terminalVisible && (
                 <>
-                  <PanelResizeHandle className="h-[2px] bg-orion-border hover:bg-orion-accent-blue transition-colors cursor-row-resize" />
+                  <PanelResizeHandle className="h-[2px] bg-orion-border hover:bg-orion-accent-purple transition-colors cursor-row-resize" />
                   <Panel defaultSize={30} minSize={10} maxSize={50}>
                     <Terminal />
                   </Panel>
@@ -77,7 +79,7 @@ export default function Layout() {
 
         {chatPanelOpen && (
           <>
-            <PanelResizeHandle className="w-[2px] bg-orion-border hover:bg-orion-accent-blue transition-colors cursor-col-resize" />
+            <PanelResizeHandle className="w-[2px] bg-orion-border hover:bg-orion-accent-purple transition-colors cursor-col-resize" />
             <Panel defaultSize={30} minSize={15} maxSize={50}>
               <ChatPanel />
             </Panel>

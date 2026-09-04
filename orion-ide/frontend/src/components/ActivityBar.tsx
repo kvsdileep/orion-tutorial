@@ -1,10 +1,11 @@
-import { FolderTree, Bot, ScrollText, History, Terminal, MessageSquare } from 'lucide-react'
+import { FolderTree, Bot, ScrollText, Sparkles, History, Terminal, MessageSquare } from 'lucide-react'
 import useStore from '../store/useStore'
 
 const navItems = [
   { view: 'files' as const, icon: FolderTree, label: 'Explorer' },
   { view: 'agent' as const, icon: Bot, label: 'Agent' },
   { view: 'rules' as const, icon: ScrollText, label: 'Rules' },
+  { view: 'skills' as const, icon: Sparkles, label: 'Skills' },
   { view: 'timetravel' as const, icon: History, label: 'Time Travel' },
 ] as const
 
@@ -29,9 +30,9 @@ export default function ActivityBar() {
             key={view}
             onClick={() => handleNavClick(view)}
             title={label}
-            className={`w-full flex items-center justify-center h-12 cursor-pointer transition-colors ${
+            className={`w-full flex items-center justify-center h-12 cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orion-accent-purple ${
               isActive
-                ? 'text-white border-l-2 border-orion-accent-blue'
+                ? 'text-white border-l-2 border-orion-accent-purple'
                 : 'text-orion-text-secondary hover:text-white border-l-2 border-transparent'
             }`}
           >
@@ -45,14 +46,14 @@ export default function ActivityBar() {
       <button
         onClick={toggleTerminal}
         title="Toggle Terminal"
-        className="w-full flex items-center justify-center h-12 cursor-pointer text-orion-text-secondary hover:text-white transition-colors"
+        className="w-full flex items-center justify-center h-12 cursor-pointer text-orion-text-secondary hover:text-orion-text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orion-accent-purple"
       >
         <Terminal size={22} />
       </button>
       <button
         onClick={toggleChatPanel}
         title="Toggle Chat"
-        className="w-full flex items-center justify-center h-12 cursor-pointer text-orion-text-secondary hover:text-white transition-colors"
+        className="w-full flex items-center justify-center h-12 cursor-pointer text-orion-text-secondary hover:text-orion-text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orion-accent-purple"
       >
         <MessageSquare size={22} />
       </button>
