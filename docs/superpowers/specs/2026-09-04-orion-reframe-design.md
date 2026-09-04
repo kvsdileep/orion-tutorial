@@ -27,7 +27,7 @@ Rebuild the Day 13 "Build an AI Coding Agent" material so that:
 
 ```
 orion-tutorial/
-  pyproject.toml                 uv project; `orion` console script; python 3.12 pinned in .python-version
+  pyproject.toml                 uv project; `orion` console script; python 3.13 pinned in .python-version
   .env.example                   OPENROUTER_API_KEY, PARALLEL_API_KEY (optional)
   AGENTS.md                      repo rules, read by the agent, Cursor, Claude Code, Codex
   DESIGN.md                      the frontend design system, verbatim as supplied
