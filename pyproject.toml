@@ -25,6 +25,10 @@ dev = [
   "ipykernel>=7",
   "numpy>=2.5.2",
 ]
+ide = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+]
 
 [build-system]
 requires = ["hatchling"]
