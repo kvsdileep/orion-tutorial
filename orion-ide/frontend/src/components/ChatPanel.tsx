@@ -8,7 +8,7 @@ export default function ChatPanel() {
   const {
     apiKey, setApiKey, selectedModel, setSelectedModel, availableModels,
     chatMessages, addChatMessage, appendToLastMessage, clearChat,
-    chatLoading, setChatLoading, rules,
+    chatLoading, setChatLoading,
   } = useStore();
 
   const [input, setInput] = useState('');
@@ -47,7 +47,6 @@ export default function ChatPanel() {
     sendChatMessage(
       allMessages,
       selectedModel,
-      rules,
       (token) => appendToLastMessage(token),
       (name) => appendToLastMessage(`\n\n**Tool:** ${name}\n`),
       (_name, result) => appendToLastMessage(`\n${result}\n`),

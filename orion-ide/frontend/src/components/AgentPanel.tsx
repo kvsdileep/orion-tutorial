@@ -9,10 +9,11 @@ const statusConfig: Record<string, { color: string; icon: React.ReactNode; label
   idle: { color: 'text-orion-text-muted', icon: <Clock size={14} />, label: 'Idle' },
   planning: { color: 'text-orion-accent-amber', icon: <Loader2 size={14} className="animate-spin" />, label: 'Planning...' },
   coding: { color: 'text-orion-accent-blue', icon: <Loader2 size={14} className="animate-spin" />, label: 'Coding...' },
-  reviewing: { color: 'text-purple-400', icon: <Loader2 size={14} className="animate-spin" />, label: 'Reviewing...' },
+  reviewing: { color: 'text-orion-accent-purple', icon: <Loader2 size={14} className="animate-spin" />, label: 'Reviewing...' },
   waiting_approval: { color: 'text-orion-accent-amber', icon: <AlertCircle size={14} className="animate-pulse" />, label: 'Waiting for Approval' },
   applying: { color: 'text-orion-accent-teal', icon: <Loader2 size={14} className="animate-spin" />, label: 'Applying Changes...' },
   testing: { color: 'text-orion-accent-blue', icon: <Loader2 size={14} className="animate-spin" />, label: 'Testing...' },
+  verifying: { color: 'text-orion-accent-blue', icon: <Loader2 size={14} className="animate-spin" />, label: 'Verifying...' },
   done: { color: 'text-green-400', icon: <CheckCircle2 size={14} />, label: 'Done' },
   error: { color: 'text-orion-accent-red', icon: <XCircle size={14} />, label: 'Error' },
 };
@@ -26,10 +27,11 @@ const taskStatusIcon: Record<string, React.ReactNode> = {
 
 export default function AgentPanel() {
   const {
-    apiKey, selectedModel, rules,
+    apiKey, selectedModel,
     agentStatus, setAgentStatus, agentPlan, setAgentPlan,
     agentTasks, setAgentTasks, setPendingReview,
     setThreadId,
+    loadedSkills, addLoadedSkill, clearLoadedSkills, testOutput, setTestOutput,
   } = useStore();
 
   const [featureRequest, setFeatureRequest] = useState('');
@@ -43,8 +45,10 @@ export default function AgentPanel() {
     setAgentStatus('planning');
     setAgentPlan(null);
     setAgentTasks([]);
+    clearLoadedSkills();
+    setTestOutput(null);
 
-    runAgent(featureRequest, selectedModel, newThreadId, rules, (event: Record<string, any>) => {
+    runAgent(featureRequest, selectedModel, newThreadId, (event: Record<string, any>) => {
       switch (event.type) {
         case 'status':
           setAgentStatus(event.status);
@@ -69,11 +73,18 @@ export default function AgentPanel() {
             return [...prev, { filepath: event.filepath, description: event.description || '', action: 'create' as const, status: 'done' as const }];
           });
           break;
+        case 'skill_loaded':
+          addLoadedSkill(event.name);
+          break;
+        case 'test':
+          setTestOutput(`${event.status === 'tests_passed' || event.status === 'done' ? 'PASS' : 'FAIL'}\n${event.output || ''}`);
+          break;
         case 'approval_needed':
           setPendingReview({
             threadId: newThreadId,
             plan: event.plan || '',
             reviewResult: event.review_result || '',
+            testOutput: event.test_output || '',
             changes: event.changes || [],
           });
           setAgentStatus('waiting_approval');
@@ -108,7 +119,7 @@ export default function AgentPanel() {
         <button
           onClick={handleRun}
           disabled={isRunning || !apiKey || !featureRequest.trim()}
-          className="w-full flex items-center justify-center gap-2 bg-orion-accent-blue text-white py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full h-10 flex items-center justify-center gap-2 bg-orion-accent-purple text-orion-text-primary hover:bg-orion-accent-purple-hover rounded-lg text-sm font-medium transition-opacity disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-orion-accent-purple focus:ring-offset-2 focus:ring-offset-orion-bg-secondary"
         >
           {isRunning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
           {isRunning ? 'Running...' : 'Run Agent'}
@@ -120,6 +131,15 @@ export default function AgentPanel() {
         {status.icon}
         <span>{status.label}</span>
       </div>
+
+      {loadedSkills.length > 0 && (
+        <div className="bg-orion-accent-soft border border-orion-border rounded-md p-3">
+          <h4 className="text-xs font-semibold text-orion-accent-purple-hover uppercase tracking-wider mb-1">Skills loaded</h4>
+          <ul className="text-xs font-mono text-orion-text-primary space-y-0.5">
+            {loadedSkills.map((name) => <li key={name}>read_skill("{name}")</li>)}
+          </ul>
+        </div>
+      )}
 
       {/* Plan */}
       {agentPlan && (
@@ -158,6 +178,13 @@ export default function AgentPanel() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {testOutput && (
+        <div className="bg-orion-bg-tertiary border border-orion-border rounded-md p-3">
+          <h4 className="text-xs font-semibold text-orion-text-secondary uppercase tracking-wider mb-1">Tests</h4>
+          <pre className="text-[11px] font-mono text-orion-text-primary whitespace-pre-wrap max-h-40 overflow-auto">{testOutput}</pre>
         </div>
       )}
     </div>
