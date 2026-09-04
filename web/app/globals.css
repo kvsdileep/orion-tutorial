@@ -5,26 +5,22 @@
 @layer base {
   html,
   body {
-    background-color: #131313;
-    color: #e5e2e1;
+    background-color: #0B0B0D;
+    color: #F4F4F5;
     font-family: var(--font-inter), Inter, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background-color: #3d5afe;
-    color: #ffffff;
+    background-color: #211B38;
+    color: #F4F4F5;
   }
 }
 
 @layer components {
   .stage-bg {
-    background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
+    background-image: radial-gradient(#1F1F24 1px, transparent 1px);
     background-size: 24px 24px;
-  }
-  .glass-header {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
   .scanlines::after {
     content: "";

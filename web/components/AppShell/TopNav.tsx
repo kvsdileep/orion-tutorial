@@ -15,7 +15,7 @@ export function TopNav() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 z-50 glass-header bg-night/80 border-b border-hairline">
+    <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-night border-b border-hairline">
       <div className="h-full max-w-screen-2xl mx-auto px-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">

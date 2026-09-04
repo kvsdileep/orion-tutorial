@@ -18,9 +18,9 @@ export function TerminalLogPanel({ logs }: { logs: LogLine[] }) {
     <section className="h-56 shrink-0 border-t border-outline-variant bg-terminal flex flex-col">
       <div className="flex items-center justify-between px-3 py-2 border-b border-hairline bg-surface">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-danger" />
+          <span className="w-2.5 h-2.5 rounded-full bg-amber" />
+          <span className="w-2.5 h-2.5 rounded-full bg-volt" />
           <span className="ml-3 font-code text-[10px] tracking-widest uppercase text-primary">
             Terminal Logs
           </span>

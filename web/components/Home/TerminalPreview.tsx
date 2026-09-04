@@ -5,15 +5,15 @@ const PREVIEW_LINES = [
   "",
   "Initializing AI Coding Agent...",
   "",
-  "  Notebook 1: Code Generator with Tools",
+  "  Lesson 1: Code Generator with Tools",
   "    tools: [@tool, bind_tools, ToolNode]",
   "    state: MessagesState",
   "",
-  "  Notebook 2: Self-Correcting Agent",
+  "  Lesson 2: Self-Correcting Agent",
   "    pattern: Generate → Execute → Retry",
   "    reflection: Reviewer node",
   "",
-  "  Notebook 3: Production Agent",
+  "  Lesson 3: Production Agent",
   "    agents: [Planner, Coder, Reviewer]",
   "    features: [RAG, interrupt, Send API]",
   "",
@@ -36,7 +36,7 @@ export function TerminalPreview() {
                     <span className="text-primary-light">$</span>
                     <span className="text-ink">{line.slice(1)}</span>
                   </>
-                ) : line.startsWith("  Notebook") || line.startsWith("  Pipeline") || line.startsWith("  Checkpoint") ? (
+                ) : line.startsWith("  Lesson") || line.startsWith("  Pipeline") || line.startsWith("  Checkpoint") ? (
                   <span className="text-primary-light">{line}</span>
                 ) : line.includes("tools:") || line.includes("state:") || line.includes("pattern:") || line.includes("reflection:") || line.includes("agents:") || line.includes("features:") ? (
                   <span className="text-gray3">{line}</span>

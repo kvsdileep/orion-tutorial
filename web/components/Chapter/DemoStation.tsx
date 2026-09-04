@@ -80,14 +80,14 @@ export function DemoStation({ demo }: { demo: DemoDef }) {
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="font-headline text-[10px] tracking-widest uppercase text-[#FF5F57] font-bold block">
+          <label className="font-headline text-[10px] tracking-widest uppercase text-danger font-bold block">
             Left Panel
           </label>
           <select
             value={leftKey}
             onChange={(e) => setLeftKey(e.target.value)}
             disabled={state === "running"}
-            className="w-full bg-surface border border-hairline rounded px-3 py-2 font-code text-sm text-ink focus:outline-none focus:border-[#FF5F57] disabled:opacity-60"
+            className="w-full bg-surface border border-hairline rounded px-3 py-2 font-code text-sm text-ink focus:outline-none focus:border-danger disabled:opacity-60"
           >
             {demo.options.map((opt) => (
               <option key={opt.key} value={opt.key}>{opt.label}</option>
@@ -141,13 +141,13 @@ export function DemoStation({ demo }: { demo: DemoDef }) {
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#FF5F57]" />
-            <span className="font-code text-[10px] tracking-widest uppercase text-[#FF5F57]">
+            <span className="w-2 h-2 rounded-full bg-danger" />
+            <span className="font-code text-[10px] tracking-widest uppercase text-danger">
               {leftVariant.label}
             </span>
           </div>
           {leftVariant.paramSnippet ? (
-            <pre className="bg-night/60 border border-[#FF5F57]/30 rounded p-3 mb-2 font-code text-[11px] leading-relaxed text-ink whitespace-pre-wrap">
+            <pre className="bg-night/60 border border-danger/30 rounded p-3 mb-2 font-code text-[11px] leading-relaxed text-ink whitespace-pre-wrap">
               {leftVariant.paramSnippet}
             </pre>
           ) : null}
@@ -156,14 +156,14 @@ export function DemoStation({ demo }: { demo: DemoDef }) {
           ) : null}
           {leftVariant.codeFile && state === "done" ? (
             <div className="mt-3">
-              <CodeEditorPanel codeFile={leftVariant.codeFile} accent="#FF5F57" />
+              <CodeEditorPanel codeFile={leftVariant.codeFile} accent="#FB7185" />
             </div>
           ) : null}
           <ExecutionStage
             state={state}
             logs={leftLogs}
             output={leftOutput}
-            accent="#FF5F57"
+            accent="#FB7185"
             emptyText="[IDLE] Select options and press RUN BOTH."
           />
         </div>
@@ -185,14 +185,14 @@ export function DemoStation({ demo }: { demo: DemoDef }) {
           ) : null}
           {rightVariant.codeFile && state === "done" ? (
             <div className="mt-3">
-              <CodeEditorPanel codeFile={rightVariant.codeFile} accent="#3D5AFE" />
+              <CodeEditorPanel codeFile={rightVariant.codeFile} accent="#8B5CF6" />
             </div>
           ) : null}
           <ExecutionStage
             state={state}
             logs={rightLogs}
             output={rightOutput}
-            accent="#3D5AFE"
+            accent="#8B5CF6"
             emptyText="[IDLE] Select options and press RUN BOTH."
           />
         </div>

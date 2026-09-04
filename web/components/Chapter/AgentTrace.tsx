@@ -7,9 +7,9 @@ const STEP_CONFIG: Record<
   TraceStep["type"],
   { icon: typeof User; label: string; color: string; bg: string }
 > = {
-  human: { icon: User, label: "HUMAN", color: "#B8EF43", bg: "rgba(184,239,67,0.08)" },
-  ai: { icon: Bot, label: "AGENT", color: "#3D5AFE", bg: "rgba(61,90,254,0.08)" },
-  tool: { icon: Wrench, label: "TOOL", color: "#FFB599", bg: "rgba(255,181,153,0.08)" },
+  human: { icon: User, label: "HUMAN", color: "#4ADE80", bg: "rgba(74,222,128,0.08)" },
+  ai: { icon: Bot, label: "AGENT", color: "#8B5CF6", bg: "rgba(139,92,246,0.08)" },
+  tool: { icon: Wrench, label: "TOOL", color: "#FB923C", bg: "rgba(251,146,60,0.08)" },
 };
 
 export function AgentTrace({ steps }: { steps: TraceStep[] }) {

@@ -156,7 +156,7 @@ export function AgentGraphVisualizer({
                   key={node.id}
                   className={`absolute -translate-x-1/2 -translate-y-1/2 rounded border px-4 py-2 font-code text-[12px] transition-all duration-300 ${
                     isActive
-                      ? "border-primary bg-primary/20 text-white shadow-[0_0_24px_rgba(85,99,255,0.35)]"
+                      ? "border-primary bg-primary/20 text-white shadow-[0_0_24px_rgba(139,92,246,0.35)]"
                       : "border-primary/60 bg-surface-low text-ink"
                   }`}
                   style={{ left: `${position.x}%`, top: `${position.y}%` }}

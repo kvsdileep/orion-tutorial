@@ -5,7 +5,7 @@ import { FileCode2 } from "lucide-react";
 
 export function CodeEditorPanel({
   codeFile,
-  accent = "#3D5AFE",
+  accent = "#8B5CF6",
 }: {
   codeFile: CodeFile;
   accent?: string;

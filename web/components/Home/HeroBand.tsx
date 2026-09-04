@@ -41,7 +41,7 @@ export function HeroBand() {
           </div>
           <Link
             href="/playground"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-headline text-label-caps uppercase tracking-widest bg-ink text-night border border-primary-light shadow-[0_0_32px_rgba(138,92,246,0.28)] hover:bg-primary-light hover:text-white transition-colors"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-headline text-label-caps uppercase tracking-widest bg-ink text-night border border-primary-light shadow-[0_0_32px_rgba(139,92,246,0.28)] hover:bg-primary-light hover:text-white transition-colors"
           >
             <Play className="w-4 h-4" />
             Try the Editor

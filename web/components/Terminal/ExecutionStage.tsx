@@ -10,7 +10,7 @@ export function ExecutionStage({
   state,
   logs,
   output,
-  accent = "#3D5AFE",
+  accent = "#8B5CF6",
   emptyText = "[IDLE] Awaiting input. Press RUN DEMO to initialize.",
 }: {
   state: StageState;
@@ -38,14 +38,14 @@ export function ExecutionStage({
           className={`w-2 h-2 rounded-full ${state === "running" ? "animate-pulse" : ""}`}
           style={{
             backgroundColor:
-              state === "running" ? accent : state === "done" ? "#B8EF43" : "#6B6B6B",
+              state === "running" ? accent : state === "done" ? "#4ADE80" : "#71717A",
           }}
         />
         <span
           className="font-code text-[10px] tracking-widest uppercase"
           style={{
             color:
-              state === "running" ? accent : state === "done" ? "#B8EF43" : "#6B6B6B",
+              state === "running" ? accent : state === "done" ? "#4ADE80" : "#71717A",
           }}
         >
           {state === "running" ? "EXECUTING" : state === "done" ? "COMPLETE" : "IDLE"}
