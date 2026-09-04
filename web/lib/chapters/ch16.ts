@@ -5,66 +5,17 @@ export const ch16: ChapterDef = {
   number: 16,
   lesson: "Lesson 3",
   subtopicLabel: "3.4 Human-in-the-Loop",
-  title: "Human-in-the-Loop",
-  subtitle: "Pause for approval before applying changes with interrupt and Command.",
+  title: "Human-in-the-Loop with Tests",
+  subtitle: "Plan, code, test, review, then stop and ask. A reject carries a reason back to the coder.",
   cursorFeature: "Agent Mode",
   designPatterns: ["Human-in-the-Loop"],
-  intro: "Autonomous doesn't mean uncontrolled. The interrupt primitive pauses the graph, presenting generated changes for human review. The user can approve, reject, or edit — then resume execution with Command. MemorySaver checkpoints state so nothing is lost during the pause.",
-  takeaway: "interrupt + Command + MemorySaver is the trifecta for safe autonomous agents. The agent proposes, the human disposes, and checkpointed state ensures you can always resume exactly where you left off.",
+  intro: "Tests run before anyone reviews. The graph applies the generated files to a scratch copy of the workspace, runs pytest there, and routes failures back to the coder with the output. Only passing code reaches the AI reviewer, and only reviewed code reaches you. interrupt() freezes the graph with the plan, the diff previews, the test output, and the review in hand. You resume it with approve, or with reject and a sentence of feedback that the coder reads verbatim. Then it applies for real and verifies again.",
+  takeaway: "Tests are the verification primitive; the model reviewer is a second opinion; the human is the gate. A reject with a reason is worth more than a reject alone, so the graph resets its counters and tries again with your words in the prompt.",
   demos: [],
   backendCode: `/* lesson:begin */
-from langgraph.types import interrupt, Command
-from langgraph.checkpoint.memory import MemorySaver
-
-
-def human_review_node(state: OrchestratorState) -> OrchestratorState:
-    changes = f"Plan: {state['plan']}\\n\\nProposed changes:\\n"
-    for item in state["generated_code"]:
-        changes += f"\\n--- {item['filepath']} ---\\n{item['explanation']}\\n"
-        preview = item["code"][:500]
-        changes += f"\`\`\`python\\n{preview}{'...' if len(item['code']) > 500 else ''}\\n\`\`\`\\n"
-
-    # interrupt() stops the graph here — returns changes to the caller
-    decision = interrupt(changes)
-
-    # This line only runs AFTER the caller resumes with Command(resume=...)
-    return {"human_decision": decision, "status": "human_reviewed"}
-
-
-def apply_changes_node(state: OrchestratorState) -> OrchestratorState:
-    for item in state["generated_code"]:
-        path = Path(item["filepath"])
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(item["code"])
-        print(f"  Applied: {item['filepath']}")
-    return {"status": "applied"}
-
-
-def run_tests_node(state: OrchestratorState) -> OrchestratorState:
-    result = subprocess.run(
-        ["python3", "-c", "import sample_project.config; import sample_project.chat; import sample_project.app"],
-        capture_output=True, text=True, timeout=10,
-    )
-    output = "All imports OK" if result.returncode == 0 else f"FAIL: {result.stderr}"
-    return {"test_output": output, "status": "tested"}
-
-
-def route_after_human(state: OrchestratorState) -> str:
-    if state.get("human_decision") == "approve":
-        return "apply"
-    return "code"  # reject → regenerate
-
-
-memory = MemorySaver()
-agent = graph.compile(checkpointer=memory)
-
-# Invoke pauses at human_review_node:
-result = agent.invoke({"feature_request": "..."}, config=config)
-
-# Resume with human decision:
-result = agent.invoke(Command(resume="approve"), config=config)
+# synced from lessons/03_brain/ch16_human_in_the_loop.py
 /* lesson:end */`,
-  backendFilename: "human_in_the_loop.py",
+  backendFilename: "ch16_human_in_the_loop.py",
   chatConfig: {
     mode: "human-in-the-loop",
     defaultPrompt: "Add a system prompt feature to the chatbot",

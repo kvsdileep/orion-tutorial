@@ -5,64 +5,28 @@ export const ch11: ChapterDef = {
   number: 11,
   lesson: "Lesson 2",
   subtopicLabel: "2.4 Dynamic Rules",
-  title: "Dynamic Rules",
-  subtitle: "Inject coding rules at runtime — the .cursorrules equivalent for agents.",
-  cursorFeature: "Cursor Rules",
+  title: "Rules & Skills",
+  subtitle: "Rules are always on and scoped by glob. Skills load on demand when their description matches the task.",
+  cursorFeature: "Cursor Rules, Skills",
   designPatterns: ["Prompt Chaining"],
-  intro: "Hard-coded system prompts are static. Dynamic rules injection loads coding standards from state at runtime, so the same agent can enforce different conventions per project. This mirrors how .cursorrules files customize Cursor's behavior per repository.",
-  takeaway: "Dynamic rules let you swap coding standards without changing agent code. Store rules in state, inject them into the system prompt at runtime, and the agent adapts to any project's conventions.",
+  intro: "Two ways to shape an agent without editing its code. Rules (.cursor/rules/*.mdc) are injected for every file that matches their globs, so test files get stricter conventions than app code. Skills (.cursor/skills/<name>/SKILL.md) are longer playbooks: the agent sees one line per skill and calls read_skill to load a body only when it needs it. The trace shows that decision.",
+  takeaway: "Rules are context you always pay for; skills are context you load when it earns its place. Both are files in the repo, so Cursor and your own agent follow the same instructions.",
   demos: [],
   backendCode: `/* lesson:begin */
-STRICT_RULES = """- ALL functions must have type hints on parameters and return type
-- ALL functions must have a Google-style docstring
-- Use list comprehensions instead of loops where possible
-- Add if __name__ == '__main__' guard for test code
-- Variable names must be descriptive (no single letters except loop counters)"""
-
-def generate_v2(state: FullAgentState) -> FullAgentState:
-    prompt = f"Write Python code for: {state['task']}"
-
-    if state.get("rules"):
-        prompt = f"Follow these rules:\\n{state['rules']}\\n\\n{prompt}"
-
-    if state.get("error"):
-        prompt += f"\\n\\nPrevious attempt had execution error:\\n{state['error']}\\nFix the code."
-    elif state.get("review_feedback"):
-        prompt += f"\\n\\nReviewer said:\\n{state['review_feedback']}\\nImprove the code."
-
-    result = structured_llm.invoke(prompt)
-    return {
-        "code": result.code,
-        "explanation": result.explanation,
-        "attempts": state.get("attempts", 0) + 1,
-        "status": "executing",
-        "error": "",
-        "review_feedback": "",
-    }
-
-# Without rules
-result_no_rules = full_agent.invoke({
-    "task": "Write a function to sort a list of dicts by a given key.",
-    "rules": "",
-    "attempts": 0, "max_attempts": 3,
-})
-
-# With rules
-result_with_rules = full_agent.invoke({
-    "task": "Write a function to sort a list of dicts by a given key.",
-    "rules": STRICT_RULES,
-    "attempts": 0, "max_attempts": 3,
-})
+# synced from lessons/02_self_awareness/ch11_rules_and_skills.py
 /* lesson:end */`,
-  backendFilename: "dynamic_rules.py",
+  backendFilename: "ch11_rules_and_skills.py",
   chatConfig: {
     mode: "rules-toggle",
     defaultPrompt: "Write a function to sort a list of dictionaries by a given key. Test with sample data.",
-    rules: `- ALL functions must have type hints on parameters and return type
-- ALL functions must have a Google-style docstring
-- Use list comprehensions instead of loops where possible
-- Add if __name__ == '__main__' guard for test code
-- Variable names must be descriptive (no single letters except loop counters)`,
+    rules: `Rules for test code, on top of the Python conventions:
+- Every test function name starts with \`test_\` and states the behaviour, for example \`test_timeout_returns_failed_result\`.
+- One behaviour per test. No loops that hide multiple assertions.
+- Use pytest fixtures and \`tmp_path\`; never write to the real filesystem outside \`tmp_path\`.
+- No network calls. Use the stub model and \`httpx.MockTransport\`.
+- Use list comprehensions instead of loops where they read better.
+- Variable names must be descriptive: no single letters except loop counters.
+- Add an \`if __name__ == "__main__":\` guard to any test helper that is also a script.`,
     conversations: {
       no_rules: [
         {

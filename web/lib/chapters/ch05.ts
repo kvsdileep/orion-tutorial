@@ -5,59 +5,36 @@ export const ch05: ChapterDef = {
   number: 5,
   lesson: "Lesson 1",
   subtopicLabel: "1.5 System Prompt",
-  title: "System Prompt & Rules",
-  subtitle: "Shape agent behavior with system prompts — the Cursor Rules equivalent.",
+  title: "System Prompt & Rules Files",
+  subtitle: "The system prompt comes from files: AGENTS.md and .cursor/rules, scoped by path.",
   cursorFeature: "Cursor Rules",
   designPatterns: ["Prompt Chaining"],
-  intro: "A system prompt sets the agent's persona, constraints, and coding style. This is the LangGraph equivalent of Cursor Rules (.cursorrules) — persistent instructions that guide every response. You'll learn how prompt engineering directly controls output quality, safety, and consistency.",
-  takeaway: "The system prompt is your most powerful lever. A well-crafted set of rules transforms a generic LLM into a specialized coding assistant that follows your project's conventions.",
+  intro: "A system prompt sets the agent's persona and conventions. In this course it is not a string in the code: it is assembled from AGENTS.md and the .mdc files under .cursor/rules, the same files Cursor reads. A rule can apply everywhere or only to files that match its globs, so the agent gets Python conventions for .py files and design rules for .tsx files without anyone pasting prompts.",
+  takeaway: "Rules in files beat rules in prompts. They live with the code, they are scoped by path, and every tool that opens the repo reads the same ones.",
   codeFilename: "data_processor.py",
   codeContent: "",
-  backendFilename: "system_prompt.py",
+  backendFilename: "ch05_rules.py",
   backendCode: `/* lesson:begin */
-from langchain_core.messages import SystemMessage, HumanMessage
-
-SYSTEM_PROMPT = """You are an expert Python developer assistant. When generating code:
-- Use type hints on all functions
-- Add concise docstrings
-- Follow PEP 8 conventions
-- Prefer modern Python (3.10+) features like match/case where appropriate
-
-You have access to file tools. Always write generated code to files."""
-
-result = app.invoke({
-    "messages": [
-        SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(
-            content="Create 'generated/data_processor.py' with a "
-            "DataProcessor class with filter_by, group_by, "
-            "and summarize methods."
-        ),
-    ]
-})
-
-for msg in result["messages"]:
-    if msg.type == "ai" and not msg.tool_calls:
-        print(msg.content)
+# synced from lessons/01_hands/ch05_rules.py
 /* lesson:end */`,
   chatConfig: {
     mode: "system-prompt",
     systemPrompts: [
       {
         id: "basic",
-        label: "Basic",
+        label: "No rules",
         prompt: "You are a helpful assistant. Write code when asked.",
       },
       {
         id: "expert",
-        label: "Expert",
-        prompt: `You are an expert Python developer assistant. When generating code:
-- Use type hints on all functions
-- Add concise docstrings
-- Follow PEP 8 conventions
-- Prefer modern Python (3.10+) features like match/case where appropriate
-
-You have access to file tools. Always write generated code to files.`,
+        label: "python.mdc",
+        prompt: `You are an expert Python developer. When generating or editing Python:
+- Use type hints on all function parameters and return values.
+- Add a concise docstring to every public function and class.
+- Follow PEP 8: 4-space indentation, snake_case names, two blank lines between top-level definitions.
+- Prefer modern Python (3.12+): pathlib over os.path, f-strings, match/case where it reads better, dataclasses for plain data.
+- Never write bare \`except:\`; catch the exception you expect.
+- Keep functions under 40 lines. Split when they grow.`,
       },
     ],
     defaultPrompt: "Create a DataProcessor class with filter_by, group_by, and summarize methods.",

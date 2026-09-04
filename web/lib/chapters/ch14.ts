@@ -5,12 +5,12 @@ export const ch14: ChapterDef = {
   number: 14,
   lesson: "Lesson 3",
   subtopicLabel: "3.2 Orchestrator State",
-  title: "Planner & Orchestrator State",
-  subtitle: "Design the state schema that tracks feature requests through the full agent lifecycle.",
-  cursorFeature: "Agent Mode",
+  title: "Toolkit, MCP & Planner",
+  subtitle: "Local tools, tools from an MCP server, and a planner that researches before it plans.",
+  cursorFeature: "Agent Mode, MCP",
   designPatterns: ["Planning"],
-  intro: "A production agent needs more than messages — it needs structured state. The orchestrator state tracks the feature request, generated plan, code changes, review results, and human decisions. A structured planner uses with_structured_output to produce a typed Plan with FileTask entries.",
-  takeaway: "Well-designed state is what separates a toy agent from a production system. Every field in your state schema represents a decision point the agent must handle, making the workflow explicit and debuggable.",
+  intro: "The toolkit is the workspace tools from Lesson 1 plus grep, glob, a sandboxed run_python, and run_command, and then two more that arrive over the Model Context Protocol from Parallel's search server: web_search and web_fetch. They bind like any other tool. The planner uses them in a research loop before it emits a structured Plan: one entry per file, create or modify, what changes. The same MCP server is in .cursor/mcp.json, so Cursor's agent has it too.",
+  takeaway: "Tools are the agent's reach. MCP makes that reach configuration instead of code, and a planner that reads before it writes makes fewer, better file tasks.",
   demos: [],
   codeContent: `class OrchestratorState(TypedDict):
     feature_request: str
@@ -25,50 +25,9 @@ export const ch14: ChapterDef = {
     status: str`,
   codeFilename: "orchestrator_state.py",
   backendCode: `/* lesson:begin */
-from pydantic import BaseModel, Field
-
-
-class FileTask(BaseModel):
-    filepath: str = Field(description="Path to file to create or modify")
-    description: str = Field(description="What to do with this file")
-    action: str = Field(description="'create' or 'modify'")
-
-
-class Plan(BaseModel):
-    summary: str = Field(description="One-line summary of the plan")
-    file_tasks: list[FileTask] = Field(description="List of file-level tasks")
-
-
-planner_llm = llm.with_structured_output(Plan)
-
-plan = planner_llm.invoke(
-    "You are a coding planner. Create a plan.\\n\\n"
-    "Feature: Add a system prompt setting to the chatbot\\n"
-    "Codebase: config.py has PAGE_TITLE, PAGE_ICON, MODEL, BASE_URL. "
-    "chat.py has get_client(api_key) and stream_response(client, messages). "
-    "app.py is the Streamlit UI with chat history and streaming."
-)
-
-
-def plan_node(state: OrchestratorState) -> OrchestratorState:
-    context_docs = retriever.invoke(state["feature_request"])
-    context = "\\n\\n".join(
-        f"--- {d.metadata['filename']} ---\\n{d.page_content}" for d in context_docs
-    )
-    plan = planner_llm.invoke(
-        f"You are a coding planner. Create a plan for this feature.\\n\\n"
-        f"Feature: {state['feature_request']}\\n\\n"
-        f"Codebase context:\\n{context}\\n\\n"
-        f"Files in project: app.py (Streamlit UI), chat.py (LLM logic), config.py (settings)"
-    )
-    return {
-        "codebase_context": context,
-        "plan": plan.summary,
-        "file_tasks": [ft.model_dump() for ft in plan.file_tasks],
-        "status": "planned",
-    }
+# synced from lessons/03_brain/ch14_toolkit_and_planner.py
 /* lesson:end */`,
-  backendFilename: "planner.py",
+  backendFilename: "ch14_toolkit_and_planner.py",
   chatConfig: {
     mode: "planner",
     defaultPrompt: "Add a system prompt setting to the chatbot",

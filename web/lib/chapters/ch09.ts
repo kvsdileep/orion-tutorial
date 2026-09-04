@@ -5,67 +5,17 @@ export const ch09: ChapterDef = {
   number: 9,
   lesson: "Lesson 2",
   subtopicLabel: "2.2 Self Correction",
-  title: "Self Correction",
-  subtitle: "Generate code, execute it, detect errors, and retry automatically.",
+  title: "Self Correction in a Sandbox",
+  subtitle: "Run the code, read the error, try again. Bounded retries, and a timeout that cannot crash the graph.",
   cursorFeature: "Bugbot",
   designPatterns: ["Reflection", "Exception Handling"],
-  intro: "The self-correcting loop is the heart of an autonomous coding agent: generate code → execute via subprocess → if it fails, feed the error back and retry. Bounded retries prevent infinite loops while giving the agent multiple chances to fix its mistakes.",
-  takeaway: "A generate-execute-retry loop with bounded retries turns a one-shot code generator into a self-healing agent. The error message is the most valuable input — it tells the model exactly what to fix.",
+  intro: "Generated code has to run before anyone trusts it. The agent executes each attempt through a small sandbox: an isolated interpreter, a scrubbed environment, a temporary working directory, and a timeout that comes back as a failed attempt instead of an exception. On failure the traceback goes into the next prompt and the loop tries again, at most three times.",
+  takeaway: "Execution is the first review. A jail is not a sandbox, so the chapter names what shipped agents use instead; the loop itself is the same one Cursor's Bugbot runs.",
   demos: [],
   backendCode: `/* lesson:begin */
-from langgraph.graph import StateGraph, START, END
-from typing_extensions import TypedDict
-
-class AgentState(TypedDict):
-    task: str
-    code: str
-    explanation: str
-    execution_result: str
-    error: str
-    attempts: int
-    max_attempts: int
-    status: str
-
-def generate(state: AgentState) -> AgentState:
-    """Generate code based on task (and previous error if retrying)."""
-    prompt = f"Write Python code for: {state['task']}"
-    if state.get("error"):
-        prompt += f"\\n\\nPrevious attempt failed with error:\\n{state['error']}\\nFix the code."
-    result = structured_llm.invoke(prompt)
-    return {
-        "code": result.code,
-        "explanation": result.explanation,
-        "attempts": state.get("attempts", 0) + 1,
-        "status": "executing",
-        "error": "",
-    }
-
-def execute(state: AgentState) -> AgentState:
-    """Execute generated code and capture results."""
-    result = execute_python(state["code"])
-    if result["returncode"] == 0:
-        return {"execution_result": result["stdout"], "error": "", "status": "success"}
-    else:
-        return {"execution_result": "", "error": result["stderr"], "status": "failed"}
-
-def should_retry(state: AgentState) -> str:
-    if state["status"] == "success":
-        return "success"
-    if state["attempts"] < state.get("max_attempts", 3):
-        return "retry"
-    return "give_up"
-
-graph = StateGraph(AgentState)
-graph.add_node("generate", generate)
-graph.add_node("execute", execute)
-graph.add_edge(START, "generate")
-graph.add_edge("generate", "execute")
-graph.add_conditional_edges("execute", should_retry, {
-    "success": END, "retry": "generate", "give_up": END
-})
-bugbot = graph.compile()
+# synced from lessons/02_self_awareness/ch09_self_correction.py
 /* lesson:end */`,
-  backendFilename: "self_correction_graph.py",
+  backendFilename: "ch09_self_correction.py",
   chatConfig: {
     mode: "self-correction",
     graphVisualization: true,

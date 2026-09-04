@@ -6,76 +6,16 @@ export const ch15: ChapterDef = {
   lesson: "Lesson 3",
   subtopicLabel: "3.3 Multi-Agent",
   title: "Multi-Agent: Planner, Coder, Reviewer",
-  subtitle: "Specialist agents collaborating through shared state.",
+  subtitle: "Three specialists, and what each one is told, including the feedback from the last round.",
   cursorFeature: "Agent Mode",
   designPatterns: ["Multi-Agent", "Routing"],
-  intro: "Instead of one monolithic agent, split responsibilities across specialists: the Planner analyzes requirements and creates a plan, the Coder implements each file task, and the Reviewer evaluates quality. They communicate through shared state, with the graph routing between them based on the current stage.",
-  takeaway: "Multi-agent architecture improves quality through specialization. Each agent has a focused system prompt and toolset, leading to better results than a single agent trying to do everything.",
+  intro: "The planner researches and plans. The coder generates one complete file per task, with the rules that apply to that path folded into its prompt, plus whatever came back from the last round: a failing test output, a reviewer's objections, or a human's reason for rejecting. The reviewer sees only the files and the test output, with no memory of how they were written. That fresh context is what makes its second opinion worth having.",
+  takeaway: "A loop only improves if feedback reaches the node that acts on it. Every prompt in this chapter is printed so you can see where the traceback, the review, and the human's note land.",
   demos: [],
   backendCode: `/* lesson:begin */
-def plan_node(state: OrchestratorState) -> OrchestratorState:
-    context_docs = retriever.invoke(state["feature_request"])
-    context = "\\n\\n".join(
-        f"--- {d.metadata['filename']} ---\\n{d.page_content}" for d in context_docs
-    )
-    plan = planner_llm.invoke(
-        f"You are a coding planner. Create a plan for this feature.\\n\\n"
-        f"Feature: {state['feature_request']}\\n\\n"
-        f"Codebase context:\\n{context}"
-    )
-    return {
-        "codebase_context": context,
-        "plan": plan.summary,
-        "file_tasks": [ft.model_dump() for ft in plan.file_tasks],
-        "status": "planned",
-    }
-
-
-def code_node(state: OrchestratorState) -> OrchestratorState:
-    results = []
-    for task in state["file_tasks"]:
-        existing = ""
-        if task["action"] == "modify":
-            try:
-                existing = Path(task["filepath"]).read_text()
-            except FileNotFoundError:
-                pass
-        result = coder_llm.invoke(
-            f"Generate the complete file content.\\n\\n"
-            f"Task: {task['description']}\\n"
-            f"File: {task['filepath']}\\n"
-            f"Existing code:\\n{existing}"
-        )
-        results.append({
-            "filepath": task["filepath"],
-            "code": result.code,
-            "explanation": result.explanation,
-        })
-    return {"generated_code": results, "status": "coded"}
-
-
-def review_node(state: OrchestratorState) -> OrchestratorState:
-    code_summary = "\\n\\n".join(
-        f"--- {item['filepath']} ---\\n{item['code']}" for item in state["generated_code"]
-    )
-    feedback = reviewer_llm.invoke(
-        f"Review this code for quality and correctness.\\n\\n{code_summary}"
-    )
-    if feedback.approved:
-        return {"review_result": feedback.feedback, "status": "approved"}
-    return {"review_result": feedback.feedback, "status": "needs_revision"}
-
-
-graph = StateGraph(OrchestratorState)
-graph.add_node("plan", plan_node)
-graph.add_node("code", code_node)
-graph.add_node("review", review_node)
-graph.add_edge(START, "plan")
-graph.add_edge("plan", "code")
-graph.add_edge("code", "review")
-graph.add_conditional_edges("review", route_after_review)
+# synced from lessons/03_brain/ch15_specialists.py
 /* lesson:end */`,
-  backendFilename: "multi_agent_pipeline.py",
+  backendFilename: "ch15_specialists.py",
   chatConfig: {
     mode: "multi-agent-pipeline",
     defaultPrompt: "Add a system prompt feature to the chatbot",

@@ -91,7 +91,7 @@ result = agent.invoke(Command(resume="reject"), config=branched_config)
         },
         {
           role: "assistant",
-          content: `**Checkpoint: After Plan** (Step 2)\n\n**Status**: planned\n**Next node**: code\n\n**State populated**:\n- ✓ feature_request\n- ✓ codebase_context (retrieved from FAISS)\n- ✓ plan (summary generated)\n- ✓ file_tasks (3 tasks)\n\n**State empty**:\n- ○ generated_code\n- ○ review_result\n- ○ human_decision\n- ○ test_output\n\nAt this checkpoint you could branch: modify the plan, add/remove file tasks, or skip straight to review.`,
+          content: `**Checkpoint: After Plan** (Step 2)\n\n**Status**: planned\n**Next node**: code\n\n**State populated**:\n- ✓ feature_request\n- ✓ codebase_context (retrieved by codebase search)\n- ✓ plan (summary generated)\n- ✓ file_tasks (3 tasks)\n\n**State empty**:\n- ○ generated_code\n- ○ review_result\n- ○ human_decision\n- ○ test_output\n\nAt this checkpoint you could branch: modify the plan, add/remove file tasks, or skip straight to review.`,
         },
       ],
       after_code: [
