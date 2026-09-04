@@ -18,7 +18,7 @@ Rebuild the Day 13 "Build an AI Coding Agent" material so that:
 - Delivery machine has uv but no conda and no Docker. The project is a uv project. The sandbox is a local jail, with a Docker backend left as a stub.
 - Every SHOW line in the instructor script that names a notebook cell (for example "NB1 C3") must still resolve to one runnable cell. Cell numbers are preserved as tags.
 - The web app at orion-tutorial.vercel.app keeps its 18 chapters and URLs. Only text and code strings change.
-- Python only. Learners clone the repo, run `uv sync`, and open the lesson files in Cursor. There are no notebooks and no Colab links. `lessons/README.md` is the learner's setup page.
+- Python only, taught live. Dileep runs the lesson files in Cursor and learners watch, the same format as the original session. There are no notebooks and no Colab links. `lessons/README.md` is the instructor's setup and run-of-files page. Whether the repo is shared with learners afterwards is Dileep's call and does not affect the design.
 - This is a fresh build for a new cohort, not an upgrade. Nothing in the repo or the site refers to a previous version, to Ishan's session, or to what changed.
 - The curriculum site ships from Dileep's fork (github.com/kvsdileep/orion-tutorial) on Dileep's Vercel account. Dileep does the Vercel import from Cursor; the repo carries everything the import needs.
 - The frontend build of the Orion IDE is not taught. The transcript shows Ishan spent about five minutes at beat 58 describing his process and withheld the code. IDE changes are demo chrome and stay small.
@@ -57,7 +57,7 @@ orion-tutorial/
   docs/superpowers/specs/        this file
 ```
 
-Removed: `Notebooks/` (notebooks, CONTENTS.md, README.md, test.csv, `sample_project/config.py.bak`). `lessons/README.md` is written fresh for a first-time reader: setup, how to run a cell, the three lessons with one line each, and `langchain.agents.create_agent` named as the prebuilt equivalent of Lesson 1.
+Removed: `Notebooks/` (notebooks, CONTENTS.md, README.md, test.csv, `sample_project/config.py.bak`). `lessons/README.md` is written fresh for the instructor: setup, how to run a cell, the three lessons with one line each, and the pre-session checklist.
 
 ## 3. Package: `orion_agent`
 
@@ -89,7 +89,7 @@ Models: `FAST` is the gpt-4o-mini ID and `STRONG` is the current Claude Sonnet I
 
 One file per web chapter. Every runnable cell starts with `# %% C<n> <label>` where `<n>` is the original notebook cell number, so the instructor script's SHOW lines resolve unchanged. New cells that did not exist in the notebooks are tagged `# %% N<n>`. Cells whose code should appear on the web chapter page carry a trailing `web` marker: `# %% C3 three tools web`.
 
-Each file has a `# %% setup` cell that imports from the package, loads `.env`, and points `Workspace` at `workspace/`. Files run top to bottom with `uv run python lessons/…/chXX.py` and cell by cell in Cursor's interactive window (Shift+Enter on a `# %%` cell; `ipykernel` is a dev dependency for this). `lessons/README.md` covers setup, the `.env` keys, the two ways to run, and `orion reset`. Async cells use top-level `await`; when run as a script the file wraps them in `asyncio.run` through a tiny `run()` helper in the setup cell.
+Each file has a `# %% setup` cell that imports from the package, loads `.env`, and points `Workspace` at `workspace/`. Files run top to bottom with `uv run python lessons/…/chXX.py` and cell by cell in Cursor's interactive window (Shift+Enter on a `# %%` cell; `ipykernel` is a dev dependency for this). `lessons/README.md` covers setup on the teaching machine, the `.env` keys, the two ways to run, `orion reset`, and `orion check-models`. Async cells use top-level `await`; when run as a script the file wraps them in `asyncio.run` through a tiny `run()` helper in the setup cell.
 
 ### Cell map
 
@@ -198,7 +198,6 @@ Chapters keep their slugs and numbers. Text and code strings change for:
 Site-wide changes:
 
 - The home page and curriculum page describe the course as it is now. No version markers, no changelog, no reference to earlier material. Copy that says "Notebook 01/02/03" becomes "Lesson 1/2/3", and the `NotebookId` type and `notebook` field are renamed `lesson`.
-- Every chapter page gets a "View lesson source" link under the code panel pointing at the lesson file on GitHub, built from a new `lessonFile` field on `ChapterDef`. A "Get started" section on the home page shows the three setup commands (clone, `uv sync`, open in Cursor).
 - The curriculum page adds a short "Rules, skills, and MCP" card between Lesson 2 and Lesson 3 that links to ch11 and ch14.
 - The playground page's code sample is replaced by the new orchestrator wiring from `orion_agent/graphs/orchestrator.py`.
 
@@ -228,7 +227,7 @@ All tests run offline with a `StubChatModel` that returns scripted responses, in
 3. Write the 18 lesson files. Run each end to end once with real models and cache the outputs in the generated notebooks.
 4. Move `Notebooks/orion` to `orion-ide/`, rewire the backend, add the two routers and the two panels.
 5. Update the seven web chapters, run the sync script, build.
-6. Delete `Notebooks/`. Write `lessons/README.md` and the root `README.md` for a first-time reader.
+6. Delete `Notebooks/`. Write `lessons/README.md` for the instructor and the root `README.md` for anyone who lands on the repo.
 7. Push `reframe-python` to origin. After Dileep's review, merge to `main` on the fork so the Vercel production deploy points at `main`.
 8. Rewrite instructor script beats 17, 25, 32, 38, 39, 42 to 47, and 58 to point at the new cells. This is a separate deliverable after the code is reviewed.
 
@@ -249,7 +248,8 @@ All tests run offline with a `StubChatModel` that returns scripted responses, in
 ## 13. Decisions taken in this spec
 
 - Cell tags preserve the original cell numbers so the instructor script does not need renumbering. New cells use `N<n>`. The tags are for Dileep; learners see them as ordinary cell labels.
-- No notebooks. The cost of a second format is drift, and the audience runs Cursor.
+- No notebooks. The cost of a second format is drift, and the only person running the code live is the instructor, in Cursor.
+- Learners watch. The site stays a visual companion during the session, as before; it does not become a self-serve course.
 - Lessons work on a gitignored `workspace/` copy of `sample_project/`, so the repo never contains agent-generated edits and "restore" is one command.
 - The reviewer runs after tests, with fresh context. Tests are the primary check; the reviewer is a second opinion.
 - The Parallel Search MCP runs keyless by default. The API key is optional and only raises rate limits.
