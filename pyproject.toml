@@ -23,6 +23,7 @@ orion = "orion_agent.cli:main"
 dev = [
   "pytest>=9",
   "ipykernel>=7",
+  "numpy>=2.5.2",
 ]
 
 [build-system]
