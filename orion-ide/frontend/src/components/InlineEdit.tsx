@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function InlineEdit({ visible, onClose, selectedCode, onApply }: Props) {
-  const { selectedModel, rules } = useStore();
+  const { selectedModel } = useStore();
   const [instruction, setInstruction] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState('');
@@ -54,7 +54,6 @@ export default function InlineEdit({ visible, onClose, selectedCode, onApply }: 
     sendChatMessage(
       messages,
       selectedModel,
-      rules,
       (token) => {
         accumulated += token;
         setResult(accumulated);

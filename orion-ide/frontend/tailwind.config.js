@@ -9,30 +9,35 @@ export default {
       colors: {
         orion: {
           bg: {
-            primary: '#1e1e1e',
-            secondary: '#252526',
-            tertiary: '#2d2d2d',
-            activity: '#333333',
-            titlebar: '#323233',
-            input: '#3c3c3c',
+            primary: '#0B0B0D',   // canvas
+            secondary: '#121214', // surface
+            tertiary: '#19191D',  // surface raised
+            activity: '#121214',
+            titlebar: '#121214',
+            input: '#19191D',
           },
-          border: '#3e3e42',
+          border: '#2B2B32',
+          'border-subtle': '#1F1F24',
           text: {
-            primary: '#cccccc',
-            secondary: '#858585',
-            muted: '#5a5a5a',
+            primary: '#F4F4F5',
+            secondary: '#A1A1AA',
+            muted: '#71717A',
           },
           accent: {
-            blue: '#007acc',
-            teal: '#4ec9b0',
-            red: '#f44747',
-            amber: '#cca700',
+            blue: '#60A5FA',
+            teal: '#4ADE80',
+            red: '#FB7185',
+            amber: '#FACC15',
+            purple: '#8B5CF6',
+            'purple-hover': '#A78BFA',
+            soft: '#211B38',
           },
-          selection: '#264f78',
+          selection: '#211B38',
         },
       },
       fontFamily: {
-        mono: ['Menlo', 'Monaco', 'Consolas', 'monospace'],
+        sans: ['Inter', 'Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Geist Mono', 'SFMono-Regular', 'Consolas', 'monospace'],
       },
     },
   },

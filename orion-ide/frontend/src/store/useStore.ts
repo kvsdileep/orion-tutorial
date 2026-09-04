@@ -9,8 +9,8 @@ interface AppState {
   availableModels: ModelInfo[]
   setAvailableModels: (models: ModelInfo[]) => void
 
-  sidebarView: 'files' | 'agent' | 'rules' | 'timetravel'
-  setSidebarView: (view: 'files' | 'agent' | 'rules' | 'timetravel') => void
+  sidebarView: 'files' | 'agent' | 'rules' | 'skills' | 'timetravel'
+  setSidebarView: (view: 'files' | 'agent' | 'rules' | 'skills' | 'timetravel') => void
   sidebarOpen: boolean
   toggleSidebar: () => void
 
@@ -36,7 +36,7 @@ interface AppState {
   terminalVisible: boolean
   toggleTerminal: () => void
 
-  agentStatus: 'idle' | 'planning' | 'coding' | 'reviewing' | 'waiting_approval' | 'applying' | 'testing' | 'done' | 'error'
+  agentStatus: 'idle' | 'planning' | 'coding' | 'reviewing' | 'waiting_approval' | 'applying' | 'testing' | 'verifying' | 'done' | 'error'
   setAgentStatus: (status: AppState['agentStatus']) => void
   agentPlan: string | null
   setAgentPlan: (plan: string | null) => void
@@ -50,8 +50,11 @@ interface AppState {
   checkpoints: Checkpoint[]
   setCheckpoints: (checkpoints: Checkpoint[]) => void
 
-  rules: string
-  setRules: (rules: string) => void
+  loadedSkills: string[]
+  addLoadedSkill: (name: string) => void
+  clearLoadedSkills: () => void
+  testOutput: string | null
+  setTestOutput: (output: string | null) => void
 
   chatPanelOpen: boolean
   toggleChatPanel: () => void
@@ -159,8 +162,11 @@ const useStore = create<AppState>((set, get) => ({
   checkpoints: [],
   setCheckpoints: (checkpoints) => set({ checkpoints }),
 
-  rules: '',
-  setRules: (rules) => set({ rules }),
+  loadedSkills: [],
+  addLoadedSkill: (name) => set((s) => ({ loadedSkills: s.loadedSkills.includes(name) ? s.loadedSkills : [...s.loadedSkills, name] })),
+  clearLoadedSkills: () => set({ loadedSkills: [] }),
+  testOutput: null,
+  setTestOutput: (output) => set({ testOutput: output }),
 
   chatPanelOpen: true,
   toggleChatPanel: () => set((s) => ({ chatPanelOpen: !s.chatPanelOpen })),

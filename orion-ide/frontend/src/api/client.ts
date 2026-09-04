@@ -47,19 +47,46 @@ export async function fetchRules() {
   return res.json()
 }
 
-export async function saveRules(content: string) {
-  const res = await fetch(`${API_BASE}/rules`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify({ content })
+export async function fetchRule(name: string) {
+  const res = await fetch(`${API_BASE}/rules/${encodeURIComponent(name)}`, { headers: getHeaders() })
+  return res.json()
+}
+
+export async function saveRule(name: string, content: string) {
+  const res = await fetch(`${API_BASE}/rules/${encodeURIComponent(name)}`, {
+    method: 'PUT', headers: getHeaders(), body: JSON.stringify({ content })
   })
+  return res.json()
+}
+
+export async function fetchSkills() {
+  const res = await fetch(`${API_BASE}/skills`, { headers: getHeaders() })
+  return res.json()
+}
+
+export async function fetchSkill(name: string) {
+  const res = await fetch(`${API_BASE}/skills/${encodeURIComponent(name)}`, { headers: getHeaders() })
+  return res.json()
+}
+
+export async function saveSkill(name: string, content: string) {
+  const res = await fetch(`${API_BASE}/skills/${encodeURIComponent(name)}`, {
+    method: 'PUT', headers: getHeaders(), body: JSON.stringify({ content })
+  })
+  return res.json()
+}
+
+export async function createSkill(name: string, description: string) {
+  const res = await fetch(`${API_BASE}/skills`, {
+    method: 'POST', headers: getHeaders(), body: JSON.stringify({ name, description })
+  })
+  if (!res.ok) throw new Error((await res.json()).detail || 'could not create skill')
   return res.json()
 }
 
 export async function sendChatMessage(
   messages: { role: string; content: string }[],
   model: string,
-  rules: string,
   onToken: (token: string) => void,
   onToolStart?: (name: string, args: Record<string, unknown>) => void,
   onToolEnd?: (name: string, result: string) => void,
@@ -70,7 +97,7 @@ export async function sendChatMessage(
   const res = await fetch(`${API_BASE}/chat`, {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ messages, model, rules, api_key: apiKey })
+    body: JSON.stringify({ messages, model, api_key: apiKey })
   })
 
   const reader = res.body?.getReader()
@@ -107,14 +134,13 @@ export async function runAgent(
   featureRequest: string,
   model: string,
   threadId: string,
-  rules: string,
   onEvent: (event: Record<string, unknown>) => void
 ) {
   const { apiKey } = useStore.getState()
   const res = await fetch(`${API_BASE}/agent/run`, {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ feature_request: featureRequest, model, thread_id: threadId, rules, api_key: apiKey })
+    body: JSON.stringify({ feature_request: featureRequest, model, thread_id: threadId, api_key: apiKey })
   })
 
   const reader = res.body?.getReader()
@@ -144,13 +170,14 @@ export async function runAgent(
 export async function approveAgent(
   threadId: string,
   decision: string,
+  feedback: string,
   onEvent: (event: Record<string, unknown>) => void
 ) {
   const { apiKey } = useStore.getState()
   const res = await fetch(`${API_BASE}/agent/approve`, {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ thread_id: threadId, decision, api_key: apiKey })
+    body: JSON.stringify({ thread_id: threadId, decision, feedback, api_key: apiKey })
   })
 
   const reader = res.body?.getReader()

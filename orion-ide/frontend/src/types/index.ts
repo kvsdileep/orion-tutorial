@@ -39,7 +39,24 @@ export interface PendingReview {
   threadId: string;
   plan: string;
   reviewResult: string;
-  changes: { filepath: string; description: string; code_preview: string }[];
+  testOutput: string;
+  changes: { filepath: string; explanation: string; preview: string }[];
+}
+
+export interface RuleSummary {
+  name: string;
+  source: string;
+  description: string;
+  globs: string[];
+  always_apply: boolean;
+}
+
+export interface SkillSummary {
+  name: string;
+  description: string;
+  paths: string[];
+  model_invocable: boolean;
+  source: string;
 }
 
 export interface Checkpoint {
