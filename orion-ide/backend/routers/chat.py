@@ -3,7 +3,7 @@ import json
 from fastapi import APIRouter, Header
 from starlette.responses import StreamingResponse
 
-from config import DEFAULT_MODEL, OPENROUTER_API_KEY, WORKSPACE_PATH
+from config import DEFAULT_MODEL, OPENROUTER_API_KEY
 from models.schemas import ChatRequest
 
 router = APIRouter(tags=["chat"])
@@ -19,12 +19,9 @@ async def chat(
 
     from agent.chat_graph import create_chat_graph
 
-    graph = create_chat_graph(api_key=api_key, model=model, workspace_path=WORKSPACE_PATH)
+    graph = create_chat_graph(api_key=api_key, model=model)
 
-    messages = []
-    if request.rules:
-        messages.append({"role": "system", "content": request.rules})
-    messages.extend([{"role": m.role, "content": m.content} for m in request.messages])
+    messages = [{"role": m.role, "content": m.content} for m in request.messages]
 
     async def event_generator():
         async for event in graph.astream_events(

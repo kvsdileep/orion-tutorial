@@ -10,7 +10,6 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage]
     api_key: str | None = None
     model: str | None = None
-    rules: str | None = None
 
 
 class FileNode(BaseModel):
@@ -32,12 +31,12 @@ class AgentRunRequest(BaseModel):
     api_key: str | None = None
     model: str | None = None
     thread_id: str | None = None
-    rules: str | None = None
 
 
 class AgentApproveRequest(BaseModel):
     thread_id: str
     decision: str
+    feedback: str = ""
 
 
 class TerminalRequest(BaseModel):
