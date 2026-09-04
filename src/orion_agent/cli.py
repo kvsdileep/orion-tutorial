@@ -26,6 +26,7 @@ def reset(root: Path) -> Path:
 
 
 def main(argv: list[str] | None = None, root: Path = REPO_ROOT) -> int:
+    """Run one `orion` subcommand and return its exit code."""
     parser = argparse.ArgumentParser(prog="orion", description="Orion teaching kit commands")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("reset", help="restore workspace/ from sample_project/")

@@ -17,17 +17,22 @@ class WorkspaceError(Exception):
 
 @dataclass(frozen=True)
 class Match:
+    """One line of one file that matched a search."""
+
     path: str
     line: int
     text: str
 
 
 class Workspace:
+    """A rooted directory with read, write, and search helpers that refuse to leave it."""
+
     def __init__(self, root: str | Path) -> None:
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
 
     def resolve(self, rel: str) -> Path:
+        """Turn a workspace-relative path into an absolute one, or raise WorkspaceError."""
         candidate = Path(rel)
         if candidate.is_absolute():
             raise WorkspaceError(f"absolute paths are not allowed: {rel}")
@@ -37,18 +42,22 @@ class Workspace:
         return full
 
     def relative(self, full: Path) -> str:
+        """Turn an absolute path inside the workspace back into a relative one."""
         return full.relative_to(self.root).as_posix()
 
     def read(self, rel: str) -> str:
+        """Return the text of a file in the workspace."""
         return self.resolve(rel).read_text()
 
     def write(self, rel: str, text: str) -> str:
+        """Write text to a file in the workspace, creating parents, and return its relative path."""
         full = self.resolve(rel)
         full.parent.mkdir(parents=True, exist_ok=True)
         full.write_text(text)
         return self.relative(full)
 
     def list(self, rel: str = ".") -> list[str]:
+        """List a directory's visible entries, each tagged [DIR] or [FILE]."""
         full = self.resolve(rel)
         entries = []
         for entry in sorted(full.iterdir(), key=lambda p: (p.is_file(), p.name)):
@@ -59,6 +68,7 @@ class Workspace:
         return entries
 
     def glob(self, pattern: str) -> list[str]:
+        """Return the relative paths of the files matching a pattern, sorted."""
         if pattern.startswith("/") or ".." in Path(pattern).parts:
             raise WorkspaceError(f"glob pattern must stay inside the workspace: {pattern}")
         out = []
@@ -68,6 +78,7 @@ class Workspace:
         return sorted(out)
 
     def grep(self, pattern: str, glob: str = "**/*.py", ignore_case: bool = True) -> list[Match]:
+        """Search the matching files line by line for a regular expression."""
         flags = re.IGNORECASE if ignore_case else 0
         rx = re.compile(pattern, flags)
         matches = []
@@ -78,11 +89,13 @@ class Workspace:
         return matches
 
     def snapshot(self) -> Path:
+        """Copy the workspace into a fresh temporary directory and return it."""
         target = Path(tempfile.mkdtemp(prefix="orion-ws-"))
         shutil.copytree(self.root, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns(*_SKIP_DIRS))
         return target
 
     def reset(self, from_dir: str | Path) -> None:
+        """Empty the workspace and refill it from another directory."""
         for child in self.root.iterdir():
             if child.is_dir():
                 shutil.rmtree(child)

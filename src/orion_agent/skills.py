@@ -20,6 +20,8 @@ SKILL_ROOTS = (".cursor/skills", ".claude/skills")
 
 @dataclass
 class Skill:
+    """One SKILL.md: the line that goes in the prompt, and the file to load on demand."""
+
     name: str
     description: str
     paths: list[str]
@@ -36,6 +38,7 @@ def _as_list(value) -> list[str]:
 
 
 def load_skills(root: str | Path) -> list[Skill]:
+    """Find every skill under the known skill roots of a repo."""
     root = Path(root).resolve()
     skills: list[Skill] = []
     for rel in SKILL_ROOTS:
@@ -57,11 +60,13 @@ def load_skills(root: str | Path) -> list[Skill]:
 
 
 def read_skill_body(skill: Skill) -> str:
+    """Return a skill's instructions without its frontmatter."""
     _, body = parse_frontmatter(skill.path.read_text())
     return body
 
 
 def skills_catalog(skills: list[Skill], for_path: str | None = None) -> str:
+    """Render the one-line-per-skill catalog for the system prompt."""
     lines = []
     for s in skills:
         if not s.model_invocable:
@@ -75,6 +80,7 @@ def skills_catalog(skills: list[Skill], for_path: str | None = None) -> str:
 
 
 def make_read_skill_tool(skills: list[Skill]) -> BaseTool:
+    """Build the read_skill tool that loads one of these skills by name."""
     by_name = {s.name: s for s in skills}
 
     @tool

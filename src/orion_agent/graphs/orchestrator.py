@@ -15,6 +15,7 @@ from typing import Literal, TypedDict
 
 from langchain_core.messages import HumanMessage, ToolMessage
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import interrupt
 
 from orion_agent.rules import load_rules
@@ -25,6 +26,8 @@ from orion_agent.workspace import Workspace, WorkspaceError
 
 
 class OrchestratorState(TypedDict, total=False):
+    """Everything the plan-code-test-review-apply run carries between nodes."""
+
     feature_request: str
     codebase_context: str
     plan: str
@@ -95,6 +98,7 @@ def build_code_prompt(state: dict, task: dict, rules_root: str | Path | None = N
 
 
 def build_review_prompt(state: dict) -> str:
+    """Build the reviewer prompt: the generated files and the test output, with no history."""
     files = "\n\n".join(f"### {g['filepath']}\n{g['code']}" for g in state.get("generated_code", []))
     return (
         "You are a code reviewer with no memory of how this code was written. Judge only what is in front of you.\n"
@@ -105,6 +109,7 @@ def build_review_prompt(state: dict) -> str:
 
 
 def run_tests(ws: Workspace, sandbox: Sandbox, changed: list[str]) -> tuple[str, bool]:
+    """Run the workspace's pytest suite, or smoke-import the changed files, and say whether it passed."""
     test_files = sorted(set(ws.glob("**/test_*.py")) | set(ws.glob("tests/**/*.py")))
     if test_files:
         r = sandbox.run([sys.executable, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider"], cwd=ws.root, timeout=120)
@@ -133,7 +138,9 @@ def build_orchestrator(
     checkpointer=None,
     max_test_attempts: int = 3,
     max_review_attempts: int = 2,
-):
+) -> CompiledStateGraph:
+    """Compile the full orchestrator: plan, code, test, AI review, human gate, apply, verify."""
+
     async def plan_node(state: OrchestratorState) -> dict:
         request = state["feature_request"]
         context = repo_map(ws)

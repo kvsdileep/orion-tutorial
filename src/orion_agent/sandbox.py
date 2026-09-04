@@ -23,6 +23,8 @@ _SAFE_ENV_KEYS = ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "SYSTEMROOT")
 
 @dataclass(frozen=True)
 class ExecResult:
+    """What a finished (or timed-out) subprocess left behind."""
+
     stdout: str
     stderr: str
     returncode: int
@@ -30,9 +32,11 @@ class ExecResult:
 
     @property
     def ok(self) -> bool:
+        """True when the process exited cleanly and did not time out."""
         return self.returncode == 0 and not self.timed_out
 
     def summary(self) -> str:
+        """Render the result as the text a model reads back as a tool result."""
         parts = [f"Exit code: {self.returncode}"]
         if self.timed_out:
             parts[0] += " (timed out)"
@@ -46,12 +50,16 @@ class ExecResult:
 
 
 class Sandbox(Protocol):
+    """What the graphs need from a place to run code."""
+
     def run_python(self, code: str, *, timeout: float = 10, cwd: Path | None = None) -> ExecResult: ...
 
     def run(self, argv: list[str], *, cwd: Path | None = None, timeout: float = 30) -> ExecResult: ...
 
 
 class LocalSandbox:
+    """Runs code on this machine in isolated mode, with a scrubbed environment and a timeout."""
+
     def __init__(self, python: str | None = None) -> None:
         self.python = python or sys.executable
 
@@ -60,6 +68,7 @@ class LocalSandbox:
         return {k: os.environ[k] for k in _SAFE_ENV_KEYS if k in os.environ}
 
     def run(self, argv: list[str], *, cwd: Path | None = None, timeout: float = 30) -> ExecResult:
+        """Run an argv list with no shell and return the result instead of raising."""
         auto_dir = None
         if cwd is None:
             auto_dir = Path(tempfile.mkdtemp(prefix="orion-sbx-"))

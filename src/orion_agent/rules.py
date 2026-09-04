@@ -22,6 +22,8 @@ _UNQUOTED_GLOB = re.compile(r'^(\s*(?:[\w-]+:|-)\s*)(\*[^"\n]*)$', re.MULTILINE)
 
 @dataclass
 class Rule:
+    """One rule file: its frontmatter, its body, and where it came from."""
+
     name: str
     description: str
     globs: list[str]
@@ -32,6 +34,7 @@ class Rule:
 
 
 def parse_frontmatter(text: str) -> tuple[dict, str]:
+    """Split a `---` frontmatter block from the body, returning both."""
     if not text.startswith("---"):
         return {}, text
     end = text.find("\n---", 3)
@@ -52,12 +55,14 @@ def _as_list(value) -> list[str]:
 
 
 def glob_matches(pattern: str, path: str) -> bool:
+    """True if a rule glob matches a path, treating `**/x` as also matching a bare `x`."""
     if fnmatchcase(path, pattern):
         return True
     return pattern.startswith("**/") and fnmatchcase(path, pattern[3:])
 
 
 def list_rules(root: str | Path) -> list[Rule]:
+    """Read every .cursor/rules/*.mdc file under a repo root."""
     root = Path(root).resolve()
     rules: list[Rule] = []
     for mdc in sorted((root / ".cursor" / "rules").glob("*.mdc")):
@@ -98,6 +103,7 @@ def _inline_refs(root: Path, body: str, seen: set[str]) -> str:
 
 
 def load_rules(root: str | Path, for_path: str | None = None) -> str:
+    """Render every rule that applies to a target path, closest and most specific last."""
     root = Path(root).resolve()
     sections: list[tuple[str, str]] = []
     for agents in _agents_files(root, for_path):

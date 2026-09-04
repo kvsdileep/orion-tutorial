@@ -11,6 +11,8 @@ from orion_agent.workspace import Workspace, WorkspaceError
 
 
 def make_tools(ws: Workspace, sandbox: Sandbox) -> dict[str, BaseTool]:
+    """Build every tool bound to one workspace and one sandbox, keyed by tool name."""
+
     @tool
     def read_file(filepath: str) -> str:
         """Read a file inside the workspace and return its contents."""

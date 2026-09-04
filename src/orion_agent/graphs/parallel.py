@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Annotated, TypedDict
 
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Send
 
 from orion_agent.graphs.orchestrator import PLAN_PROMPT, build_code_prompt
@@ -15,10 +16,13 @@ from orion_agent.workspace import Workspace
 
 
 def add_to_list(existing: list, new: list) -> list:
+    """Reducer that concatenates what the fanned-out coders return."""
     return existing + new
 
 
 class ParallelState(TypedDict, total=False):
+    """What the fan-out graph carries: one plan in, many files out."""
+
     feature_request: str
     codebase_context: str
     plan: str
@@ -28,11 +32,17 @@ class ParallelState(TypedDict, total=False):
 
 
 class SingleFileState(TypedDict):
+    """What one fanned-out coder is sent."""
+
     task: dict
     codebase_context: str
 
 
-def build_parallel_agent(planner, coder, ws: Workspace, *, rules_root: str | Path | None = None, checkpointer=None):
+def build_parallel_agent(
+    planner, coder, ws: Workspace, *, rules_root: str | Path | None = None, checkpointer=None
+) -> CompiledStateGraph:
+    """Compile the graph that plans once, then codes every file at the same time."""
+
     def plan_node(state: ParallelState) -> dict:
         context = repo_map(ws)
         plan: Plan = planner.invoke(PLAN_PROMPT.format(request=state["feature_request"], context=context))

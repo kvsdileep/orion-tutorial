@@ -5,12 +5,15 @@ from __future__ import annotations
 from typing import Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 
 from orion_agent.sandbox import Sandbox
 from orion_agent.schemas import CodeOutput, ReviewResult
 
 
 class AgentState(TypedDict, total=False):
+    """What the generate-execute-retry loop carries between nodes."""
+
     task: str
     code: str
     explanation: str
@@ -23,6 +26,8 @@ class AgentState(TypedDict, total=False):
 
 
 class FullAgentState(AgentState, total=False):
+    """AgentState plus the reviewer's verdict."""
+
     review_feedback: str
     approved: bool
 
@@ -59,7 +64,8 @@ def _make_nodes(coder, sandbox: Sandbox, timeout: float):
     return generate, execute, should_retry
 
 
-def build_bugbot(coder, sandbox: Sandbox, timeout: float = 10):
+def build_bugbot(coder, sandbox: Sandbox, timeout: float = 10) -> CompiledStateGraph:
+    """Compile the loop that writes code, runs it, and retries on the error it printed."""
     generate, execute, should_retry = _make_nodes(coder, sandbox, timeout)
     graph = StateGraph(AgentState)
     graph.add_node("generate", generate)
@@ -70,7 +76,8 @@ def build_bugbot(coder, sandbox: Sandbox, timeout: float = 10):
     return graph.compile()
 
 
-def build_full_agent(coder, reviewer, sandbox: Sandbox, timeout: float = 10):
+def build_full_agent(coder, reviewer, sandbox: Sandbox, timeout: float = 10) -> CompiledStateGraph:
+    """Compile the bugbot loop with an AI reviewer between a clean run and the end."""
     generate, execute, should_retry = _make_nodes(coder, sandbox, timeout)
 
     def review(state: FullAgentState) -> dict:

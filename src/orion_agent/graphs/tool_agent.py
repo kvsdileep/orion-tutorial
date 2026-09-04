@@ -8,6 +8,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage
 from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, MessagesState, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode
 
 
@@ -16,7 +17,8 @@ def build_tool_agent(
     tools: list[BaseTool],
     system_prompt: str | None = None,
     checkpointer=None,
-):
+) -> CompiledStateGraph:
+    """Compile the two-node agent loop: the model decides, the tools run, the model sees the result."""
     llm_with_tools = llm.bind_tools(tools)
 
     def agent(state: MessagesState) -> dict:
@@ -38,7 +40,9 @@ def build_tool_agent(
     return graph.compile(checkpointer=checkpointer)
 
 
-def prebuilt_agent(llm: BaseChatModel, tools: list[BaseTool], system_prompt: str | None = None, checkpointer=None):
+def prebuilt_agent(
+    llm: BaseChatModel, tools: list[BaseTool], system_prompt: str | None = None, checkpointer=None
+) -> CompiledStateGraph:
     """What build_tool_agent does, as LangChain ships it."""
     from langchain.agents import create_agent
 
