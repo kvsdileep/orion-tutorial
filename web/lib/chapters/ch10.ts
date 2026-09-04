@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch10: ChapterDef = {
   slug: "reflection",
   number: 10,
-  notebook: "Notebook 02",
+  lesson: "Lesson 2",
   subtopicLabel: "2.3 Reflection",
   title: "Reflection",
   subtitle: "Add a reviewer node that evaluates code quality after execution succeeds.",
@@ -12,7 +12,8 @@ export const ch10: ChapterDef = {
   intro: "Passing tests isn't enough — code can be correct but poorly written. The reflection pattern adds a reviewer node after successful execution. It evaluates quality (naming, structure, edge cases) and can send the code back for revision, creating a second improvement loop.",
   takeaway: "Reflection separates 'does it work?' from 'is it good?'. A dedicated reviewer node catches quality issues that unit tests miss, pushing the agent toward production-grade output.",
   demos: [],
-  backendCode: `from langgraph.graph import StateGraph, START, END
+  backendCode: `/* lesson:begin */
+from langgraph.graph import StateGraph, START, END
 
 class ReviewResult(BaseModel):
     approved: bool = Field(description="Whether the code meets quality standards")
@@ -55,7 +56,8 @@ graph.add_conditional_edges("execute", route_after_execute, {
 graph.add_conditional_edges("review", route_after_review, {
     "done": END, "revise": "generate"
 })
-full_agent = graph.compile()`,
+full_agent = graph.compile()
+/* lesson:end */`,
   backendFilename: "reflection_graph.py",
   chatConfig: {
     mode: "reflection",

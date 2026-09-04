@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch18: ChapterDef = {
   slug: "time-travel",
   number: 18,
-  notebook: "Notebook 03",
+  lesson: "Lesson 3",
   subtopicLabel: "3.6 Time-Travel Debugging",
   title: "Time-Travel Debugging",
   subtitle: "Inspect and replay any checkpoint in the agent's execution history.",
@@ -23,7 +23,8 @@ for i, snapshot in enumerate(reversed(history)):
     next_node = snapshot.next
     print(f"  Step {i}: status={status}, files={n_files}, review_attempts={attempts}, next={next_node}")`,
   codeFilename: "time_travel.py",
-  backendCode: `from langgraph.checkpoint.memory import MemorySaver
+  backendCode: `/* lesson:begin */
+from langgraph.checkpoint.memory import MemorySaver
 
 memory = MemorySaver()
 agent = graph.compile(checkpointer=memory)
@@ -53,7 +54,8 @@ branched_config = {
     }
 }
 # Resume from that point with a different decision
-result = agent.invoke(Command(resume="reject"), config=branched_config)`,
+result = agent.invoke(Command(resume="reject"), config=branched_config)
+/* lesson:end */`,
   backendFilename: "time_travel_debug.py",
   chatConfig: {
     mode: "time-travel",

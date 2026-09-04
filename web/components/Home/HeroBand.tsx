@@ -20,8 +20,7 @@ export function HeroBand() {
         </h1>
 
         <p className="font-body text-body-lg text-gray2 mt-6 max-w-2xl mx-auto">
-          18 chapters across 3 notebooks. From your first LLM call to a production
-          multi-agent system with human-in-the-loop gates and time-travel debugging.
+          18 chapters across 3 lessons. From your first LLM call to an agent that plans, tests, reviews, and waits for your approval before it writes to disk.
         </p>
 
         <div className="mt-10 space-y-4">

@@ -79,7 +79,7 @@ class SimpleLogger:
 export const ch07: ChapterDef = {
   slug: "multi-turn",
   number: 7,
-  notebook: "Notebook 01",
+  lesson: "Lesson 1",
   subtopicLabel: "1.7 Multi Turn Conversation",
   title: "Multi-Turn Conversations",
   subtitle: "Maintain message history across turns for contextual follow-ups.",
@@ -88,7 +88,8 @@ export const ch07: ChapterDef = {
   intro: "A single-turn agent forgets everything after each response. By maintaining message history in MessagesState, the agent can handle follow-up questions, refine previous outputs, and build on context from earlier in the conversation — just like a chat session in Cursor.",
   takeaway: "Multi-turn capability transforms a stateless function into a conversational partner. The key is appending each exchange to MessagesState so the agent has full context for every decision.",
   backendFilename: "multi_turn.py",
-  backendCode: `# Turn 1: Create a file
+  backendCode: `/* lesson:begin */
+# Turn 1: Create a file
 messages = [
     SystemMessage(content=SYSTEM_PROMPT),
     HumanMessage(
@@ -118,7 +119,8 @@ Write the updated file.
 result = app.invoke({"messages": messages})
 
 print("=== Turn 2 complete ===")
-print(open("generated/logger.py").read())`,
+print(open("generated/logger.py").read())
+/* lesson:end */`,
   chatConfig: {
     mode: "multi-turn",
     turnFiles: {

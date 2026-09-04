@@ -30,7 +30,7 @@ export function ChapterTimeline() {
                 >
                   <div className="bg-surface border border-hairline rounded-lg p-5 hover:border-primary/40 transition-colors">
                     <span className="font-code text-xs text-primary-light">
-                      {ch.notebook} / {String(ch.number).padStart(2, "0")}
+                      {ch.lesson} / {String(ch.number).padStart(2, "0")}
                     </span>
                     <h3 className="font-headline text-headline-sm text-ink mt-1">
                       {ch.title}

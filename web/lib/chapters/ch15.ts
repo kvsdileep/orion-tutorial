@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch15: ChapterDef = {
   slug: "multi-agent",
   number: 15,
-  notebook: "Notebook 03",
+  lesson: "Lesson 3",
   subtopicLabel: "3.3 Multi-Agent",
   title: "Multi-Agent: Planner, Coder, Reviewer",
   subtitle: "Specialist agents collaborating through shared state.",
@@ -12,7 +12,8 @@ export const ch15: ChapterDef = {
   intro: "Instead of one monolithic agent, split responsibilities across specialists: the Planner analyzes requirements and creates a plan, the Coder implements each file task, and the Reviewer evaluates quality. They communicate through shared state, with the graph routing between them based on the current stage.",
   takeaway: "Multi-agent architecture improves quality through specialization. Each agent has a focused system prompt and toolset, leading to better results than a single agent trying to do everything.",
   demos: [],
-  backendCode: `def plan_node(state: OrchestratorState) -> OrchestratorState:
+  backendCode: `/* lesson:begin */
+def plan_node(state: OrchestratorState) -> OrchestratorState:
     context_docs = retriever.invoke(state["feature_request"])
     context = "\\n\\n".join(
         f"--- {d.metadata['filename']} ---\\n{d.page_content}" for d in context_docs
@@ -72,7 +73,8 @@ graph.add_node("review", review_node)
 graph.add_edge(START, "plan")
 graph.add_edge("plan", "code")
 graph.add_edge("code", "review")
-graph.add_conditional_edges("review", route_after_review)`,
+graph.add_conditional_edges("review", route_after_review)
+/* lesson:end */`,
   backendFilename: "multi_agent_pipeline.py",
   chatConfig: {
     mode: "multi-agent-pipeline",

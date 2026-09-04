@@ -2,24 +2,24 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { chapters } from "@/lib/registry";
 
-const notebookGroups = [
+const lessonGroups = [
   {
-    notebook: "Notebook 01" as const,
-    title: "Code Generator with Tools",
+    lesson: "Lesson 1" as const,
+    title: "Hands: tools and the agent loop",
     description: "Set up your LLM, define tools, build the agent graph, and generate code with streaming and multi-turn conversations.",
-    chapters: chapters.filter((ch) => ch.notebook === "Notebook 01"),
+    chapters: chapters.filter((ch) => ch.lesson === "Lesson 1"),
   },
   {
-    notebook: "Notebook 02" as const,
-    title: "Self-Correcting Agent",
+    lesson: "Lesson 2" as const,
+    title: "Self-awareness: run, review, retry",
     description: "Add structured output, self-correction loops, reflection, dynamic rules, and inline editing capabilities.",
-    chapters: chapters.filter((ch) => ch.notebook === "Notebook 02"),
+    chapters: chapters.filter((ch) => ch.lesson === "Lesson 2"),
   },
   {
-    notebook: "Notebook 03" as const,
-    title: "Production Coding Agent",
+    lesson: "Lesson 3" as const,
+    title: "Brain: plan, gate, parallelise",
     description: "Build a multi-agent system with codebase RAG, human-in-the-loop gates, parallel generation, and time-travel debugging.",
-    chapters: chapters.filter((ch) => ch.notebook === "Notebook 03"),
+    chapters: chapters.filter((ch) => ch.lesson === "Lesson 3"),
   },
 ];
 
@@ -34,17 +34,16 @@ export default function CurriculumPage() {
           18 Chapters to Production
         </h1>
         <p className="font-body text-body-lg text-gray2 mt-3">
-          Each chapter introduces one concept and lets you compare baseline vs
-          enhanced output in an interactive demo.
+          Each chapter introduces one idea and lets you compare a baseline against the enhanced agent in an interactive demo.
         </p>
       </div>
 
       <div className="space-y-12">
-        {notebookGroups.map((group) => (
-          <section key={group.notebook}>
+        {lessonGroups.map((group) => (
+          <section key={group.lesson}>
             <div className="mb-5">
               <span className="font-code text-primary-light text-label-caps uppercase tracking-widest">
-                {group.notebook}
+                {group.lesson}
               </span>
               <h2 className="font-headline text-headline-md text-ink mt-2">
                 {group.title}

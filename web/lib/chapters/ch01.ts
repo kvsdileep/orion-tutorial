@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch01: ChapterDef = {
   slug: "setting-up-llm",
   number: 1,
-  notebook: "Notebook 01",
+  lesson: "Lesson 1",
   subtopicLabel: "1.1 LLM Setup",
   title: "Setting Up LLM + OpenRouter",
   subtitle:
@@ -15,7 +15,8 @@ export const ch01: ChapterDef = {
   takeaway:
     "A single LLM call through OpenRouter gives you access to dozens of models via a unified API. LangChain's ChatOpenAI abstraction keeps your agent code model-agnostic, so you can swap providers without rewriting logic.",
   backendFilename: "setting_up_llm.py",
-  backendCode: `import os
+  backendCode: `/* lesson:begin */
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,7 +33,8 @@ llm = ChatOpenAI(
 )
 
 response = llm.invoke("Say hello in one sentence.")
-print(response.content)`,
+print(response.content)
+/* lesson:end */`,
   chatConfig: {
     mode: "model-picker",
     models: [

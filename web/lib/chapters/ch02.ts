@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch02: ChapterDef = {
   slug: "defining-tools",
   number: 2,
-  notebook: "Notebook 01",
+  lesson: "Lesson 1",
   subtopicLabel: "1.2 Tools",
   title: "Defining Tools",
   subtitle: "Give your agent capabilities with @tool decorator, docstrings, and type hints.",
@@ -12,7 +12,8 @@ export const ch02: ChapterDef = {
   intro: "Tools are how an LLM interacts with the outside world. Using LangChain's @tool decorator, you define Python functions with type hints and docstrings — the framework auto-generates a JSON schema so the model knows when and how to call each tool.",
   takeaway: "Well-typed, well-documented tool functions let the LLM self-select the right tool at the right time. The @tool decorator bridges natural language intent to executable code.",
   backendFilename: "defining_tools.py",
-  backendCode: `from langchain_core.tools import tool
+  backendCode: `/* lesson:begin */
+from langchain_core.tools import tool
 
 
 @tool
@@ -42,7 +43,8 @@ tools = [read_file, write_file, list_directory]
 
 for t in tools:
     print(f"{t.name}: {t.description}")
-    print(f"  Schema: {t.args_schema.model_json_schema()}\\n")`,
+    print(f"  Schema: {t.args_schema.model_json_schema()}\\n")
+/* lesson:end */`,
   chatConfig: {
     mode: "tool-toggles",
     tools: [

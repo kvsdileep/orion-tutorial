@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch09: ChapterDef = {
   slug: "self-correction",
   number: 9,
-  notebook: "Notebook 02",
+  lesson: "Lesson 2",
   subtopicLabel: "2.2 Self Correction",
   title: "Self Correction",
   subtitle: "Generate code, execute it, detect errors, and retry automatically.",
@@ -12,7 +12,8 @@ export const ch09: ChapterDef = {
   intro: "The self-correcting loop is the heart of an autonomous coding agent: generate code → execute via subprocess → if it fails, feed the error back and retry. Bounded retries prevent infinite loops while giving the agent multiple chances to fix its mistakes.",
   takeaway: "A generate-execute-retry loop with bounded retries turns a one-shot code generator into a self-healing agent. The error message is the most valuable input — it tells the model exactly what to fix.",
   demos: [],
-  backendCode: `from langgraph.graph import StateGraph, START, END
+  backendCode: `/* lesson:begin */
+from langgraph.graph import StateGraph, START, END
 from typing_extensions import TypedDict
 
 class AgentState(TypedDict):
@@ -62,7 +63,8 @@ graph.add_edge("generate", "execute")
 graph.add_conditional_edges("execute", should_retry, {
     "success": END, "retry": "generate", "give_up": END
 })
-bugbot = graph.compile()`,
+bugbot = graph.compile()
+/* lesson:end */`,
   backendFilename: "self_correction_graph.py",
   chatConfig: {
     mode: "self-correction",

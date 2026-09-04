@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch11: ChapterDef = {
   slug: "dynamic-rules",
   number: 11,
-  notebook: "Notebook 02",
+  lesson: "Lesson 2",
   subtopicLabel: "2.4 Dynamic Rules",
   title: "Dynamic Rules",
   subtitle: "Inject coding rules at runtime — the .cursorrules equivalent for agents.",
@@ -12,7 +12,8 @@ export const ch11: ChapterDef = {
   intro: "Hard-coded system prompts are static. Dynamic rules injection loads coding standards from state at runtime, so the same agent can enforce different conventions per project. This mirrors how .cursorrules files customize Cursor's behavior per repository.",
   takeaway: "Dynamic rules let you swap coding standards without changing agent code. Store rules in state, inject them into the system prompt at runtime, and the agent adapts to any project's conventions.",
   demos: [],
-  backendCode: `STRICT_RULES = """- ALL functions must have type hints on parameters and return type
+  backendCode: `/* lesson:begin */
+STRICT_RULES = """- ALL functions must have type hints on parameters and return type
 - ALL functions must have a Google-style docstring
 - Use list comprehensions instead of loops where possible
 - Add if __name__ == '__main__' guard for test code
@@ -51,7 +52,8 @@ result_with_rules = full_agent.invoke({
     "task": "Write a function to sort a list of dicts by a given key.",
     "rules": STRICT_RULES,
     "attempts": 0, "max_attempts": 3,
-})`,
+})
+/* lesson:end */`,
   backendFilename: "dynamic_rules.py",
   chatConfig: {
     mode: "rules-toggle",

@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch05: ChapterDef = {
   slug: "system-prompt",
   number: 5,
-  notebook: "Notebook 01",
+  lesson: "Lesson 1",
   subtopicLabel: "1.5 System Prompt",
   title: "System Prompt & Rules",
   subtitle: "Shape agent behavior with system prompts — the Cursor Rules equivalent.",
@@ -14,7 +14,8 @@ export const ch05: ChapterDef = {
   codeFilename: "data_processor.py",
   codeContent: "",
   backendFilename: "system_prompt.py",
-  backendCode: `from langchain_core.messages import SystemMessage, HumanMessage
+  backendCode: `/* lesson:begin */
+from langchain_core.messages import SystemMessage, HumanMessage
 
 SYSTEM_PROMPT = """You are an expert Python developer assistant. When generating code:
 - Use type hints on all functions
@@ -37,7 +38,8 @@ result = app.invoke({
 
 for msg in result["messages"]:
     if msg.type == "ai" and not msg.tool_calls:
-        print(msg.content)`,
+        print(msg.content)
+/* lesson:end */`,
   chatConfig: {
     mode: "system-prompt",
     systemPrompts: [

@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch14: ChapterDef = {
   slug: "orchestrator-state",
   number: 14,
-  notebook: "Notebook 03",
+  lesson: "Lesson 3",
   subtopicLabel: "3.2 Orchestrator State",
   title: "Planner & Orchestrator State",
   subtitle: "Design the state schema that tracks feature requests through the full agent lifecycle.",
@@ -24,7 +24,8 @@ export const ch14: ChapterDef = {
     test_output: str
     status: str`,
   codeFilename: "orchestrator_state.py",
-  backendCode: `from pydantic import BaseModel, Field
+  backendCode: `/* lesson:begin */
+from pydantic import BaseModel, Field
 
 
 class FileTask(BaseModel):
@@ -65,7 +66,8 @@ def plan_node(state: OrchestratorState) -> OrchestratorState:
         "plan": plan.summary,
         "file_tasks": [ft.model_dump() for ft in plan.file_tasks],
         "status": "planned",
-    }`,
+    }
+/* lesson:end */`,
   backendFilename: "planner.py",
   chatConfig: {
     mode: "planner",

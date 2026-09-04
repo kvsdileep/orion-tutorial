@@ -18,12 +18,12 @@ export function ChapterSidebar() {
           {chapters.map((ch, index) => {
             const href = `/curriculum/${ch.slug}`;
             const isActive = pathname === href;
-            const showNotebook = index === 0 || chapters[index - 1].notebook !== ch.notebook;
+            const showLesson = index === 0 || chapters[index - 1].lesson !== ch.lesson;
             return (
               <Fragment key={ch.slug}>
-                {showNotebook ? (
+                {showLesson ? (
                   <div className="pt-3 pb-1 px-3 font-code text-[10px] uppercase tracking-widest text-primary-light">
-                    {ch.notebook}
+                    {ch.lesson}
                   </div>
                 ) : null}
                 <Link

@@ -66,7 +66,7 @@ export type DemoDef = {
   inputFile?: DemoInputFile;
 };
 
-export type NotebookId = "Notebook 01" | "Notebook 02" | "Notebook 03";
+export type LessonId = "Lesson 1" | "Lesson 2" | "Lesson 3";
 
 export type AIExchange = {
   userMessage: string;
@@ -177,7 +177,7 @@ export type ChatConfig = {
 export type ChapterDef = {
   slug: string;
   number: number;
-  notebook: NotebookId;
+  lesson: LessonId;
   subtopicLabel?: string;
   title: string;
   subtitle: string;

@@ -3,7 +3,7 @@ import type { ChapterDef } from "./schema";
 export const playground: ChapterDef = {
   slug: "playground",
   number: 19,
-  notebook: "Notebook 03",
+  lesson: "Lesson 3",
   subtopicLabel: "Production Playground",
   title: "Orion Playground",
   subtitle: "Experience the production coding agent in one complete editor.",

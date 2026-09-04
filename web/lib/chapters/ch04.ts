@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch04: ChapterDef = {
   slug: "code-generation",
   number: 4,
-  notebook: "Notebook 01",
+  lesson: "Lesson 1",
   subtopicLabel: "1.4 Code Generation",
   title: "Code Generation Task",
   subtitle: "Have the agent generate code and write it to files using tool calls.",
@@ -12,7 +12,8 @@ export const ch04: ChapterDef = {
   intro: "Now that the agent has tools and a graph, it's time for the first real task: generating Python code from a natural language description and writing it to disk. The agent decides which file operations to use, generates the code, and persists the result — all through the tool-calling loop.",
   takeaway: "Code generation is just tool use with a purpose. The agent generates content via the LLM and persists it via write_file — the same pattern scales to any generative task.",
   backendFilename: "code_generation.py",
-  backendCode: `from langchain_core.messages import HumanMessage
+  backendCode: `/* lesson:begin */
+from langchain_core.messages import HumanMessage
 
 # Task: Generate a Python file via the agent
 result = app.invoke({
@@ -32,7 +33,8 @@ for msg in result["messages"]:
     print(f"{msg.type}: {msg.content[:100] if msg.content else ''}")
     if hasattr(msg, "tool_calls") and msg.tool_calls:
         for tc in msg.tool_calls:
-            print(f"  -> {tc['name']}({list(tc['args'].keys())})")`,
+            print(f"  -> {tc['name']}({list(tc['args'].keys())})")
+/* lesson:end */`,
   chatConfig: {
     mode: "code-gen",
     defaultPrompt: `Create a Python file called 'generated/calculator.py' with a Calculator class that has:

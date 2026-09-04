@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch08: ChapterDef = {
   slug: "structured-output",
   number: 8,
-  notebook: "Notebook 02",
+  lesson: "Lesson 2",
   subtopicLabel: "2.1 Structured Output",
   title: "Structured Output",
   subtitle: "Force the LLM to return Pydantic-validated JSON with with_structured_output.",
@@ -12,7 +12,8 @@ export const ch08: ChapterDef = {
   intro: "Free-text LLM responses are unpredictable. with_structured_output binds a Pydantic model to the LLM call, ensuring every response is valid, typed JSON. This is essential for agents that need to parse results programmatically — bug reports, code plans, review verdicts.",
   takeaway: "Structured output eliminates parsing fragility. When your agent returns a Pydantic model instead of raw text, downstream nodes can rely on typed fields rather than regex or string matching.",
   demos: [],
-  backendCode: `from pydantic import BaseModel, Field
+  backendCode: `/* lesson:begin */
+from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
 
 class CodeOutput(BaseModel):
@@ -35,7 +36,8 @@ result = structured_llm.invoke(
 )
 print(f"Type: {type(result)}")
 print(f"Explanation: {result.explanation}")
-print(f"Code:\\n{result.code}")`,
+print(f"Code:\\n{result.code}")
+/* lesson:end */`,
   backendFilename: "structured_output.py",
   chatConfig: {
     mode: "structured-output",

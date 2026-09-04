@@ -5,18 +5,18 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown, ChevronRight, File, Folder } from "lucide-react";
 import { chapters } from "@/lib/registry";
-import type { NotebookId, WorkspaceFile } from "@/lib/schema";
+import type { LessonId, WorkspaceFile } from "@/lib/schema";
 
-const NOTEBOOK_LABELS: Record<NotebookId, string> = {
-  "Notebook 01": "notebook_01",
-  "Notebook 02": "notebook_02",
-  "Notebook 03": "notebook_03",
+const LESSON_LABELS: Record<LessonId, string> = {
+  "Lesson 1": "lesson_1",
+  "Lesson 2": "lesson_2",
+  "Lesson 3": "lesson_3",
 };
 
-const NOTEBOOK_TITLES: Record<NotebookId, string> = {
-  "Notebook 01": "Code Generator with Tools",
-  "Notebook 02": "Self-Correcting Agent",
-  "Notebook 03": "Production Agent",
+const LESSON_TITLES: Record<LessonId, string> = {
+  "Lesson 1": "Hands: tools and the agent loop",
+  "Lesson 2": "Self-awareness: run, review, retry",
+  "Lesson 3": "Brain: plan, gate, parallelise",
 };
 
 type FileExplorerProps = {
@@ -39,16 +39,16 @@ function fileLabel(path: string): string {
 
 export function TutorialExplorer() {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState<Record<NotebookId, boolean>>({
-    "Notebook 01": true,
-    "Notebook 02": true,
-    "Notebook 03": true,
+  const [expanded, setExpanded] = useState<Record<LessonId, boolean>>({
+    "Lesson 1": true,
+    "Lesson 2": true,
+    "Lesson 3": true,
   });
 
-  const groups: { id: NotebookId; items: typeof chapters }[] = [
-    { id: "Notebook 01", items: chapters.filter((c) => c.notebook === "Notebook 01") },
-    { id: "Notebook 02", items: chapters.filter((c) => c.notebook === "Notebook 02") },
-    { id: "Notebook 03", items: chapters.filter((c) => c.notebook === "Notebook 03") },
+  const groups: { id: LessonId; items: typeof chapters }[] = [
+    { id: "Lesson 1", items: chapters.filter((c) => c.lesson === "Lesson 1") },
+    { id: "Lesson 2", items: chapters.filter((c) => c.lesson === "Lesson 2") },
+    { id: "Lesson 3", items: chapters.filter((c) => c.lesson === "Lesson 3") },
   ];
 
   return (
@@ -73,10 +73,10 @@ export function TutorialExplorer() {
                 <Folder className="w-4 h-4 text-ink-variant shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="font-body text-[12px] text-ink font-semibold truncate">
-                    {NOTEBOOK_LABELS[group.id]}
+                    {LESSON_LABELS[group.id]}
                   </span>
                   <span className="font-body text-[10px] text-ink-variant truncate">
-                    {NOTEBOOK_TITLES[group.id]}
+                    {LESSON_TITLES[group.id]}
                   </span>
                 </div>
               </button>
@@ -111,7 +111,7 @@ export function TutorialExplorer() {
         </div>
         <div className="flex flex-wrap gap-1">
           <span className="px-1.5 py-0.5 rounded bg-surface-high text-ink-variant text-[9px] font-bold border border-outline-variant">
-            NOTEBOOKS
+            LESSONS
           </span>
           <span className="px-1.5 py-0.5 rounded bg-surface-high text-ink-variant text-[9px] font-bold border border-outline-variant">
             CHAPTERS

@@ -3,7 +3,7 @@ import type { ChapterDef } from "../schema";
 export const ch17: ChapterDef = {
   slug: "parallel-generation",
   number: 17,
-  notebook: "Notebook 03",
+  lesson: "Lesson 3",
   subtopicLabel: "3.5 Parallel Generation",
   title: "Parallel Code Generation",
   subtitle: "Fan out to per-file coders with the Send API for concurrent generation.",
@@ -12,7 +12,8 @@ export const ch17: ChapterDef = {
   intro: "When a plan has multiple independent file tasks, generating them sequentially wastes time. The Send API fans out to parallel coder subgraphs — one per file — then merges results back with custom reducers. This is how production agents achieve speed on multi-file changes.",
   takeaway: "The Send API turns sequential bottlenecks into parallel pipelines. Combined with reducers for merging results, you can scale code generation linearly with the number of files in a plan.",
   demos: [],
-  backendCode: `from typing import Annotated
+  backendCode: `/* lesson:begin */
+from typing import Annotated
 from langgraph.types import Send
 
 
@@ -61,7 +62,8 @@ parallel_graph.add_node("collect", collect_node)
 parallel_graph.add_edge(START, "plan")
 parallel_graph.add_conditional_edges("plan", fan_out_to_coders)
 parallel_graph.add_edge("parallel_code", "collect")
-parallel_graph.add_edge("collect", END)`,
+parallel_graph.add_edge("collect", END)
+/* lesson:end */`,
   backendFilename: "parallel_gen.py",
   chatConfig: {
     mode: "parallel-gen",
