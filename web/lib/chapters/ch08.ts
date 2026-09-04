@@ -13,30 +13,14 @@ export const ch08: ChapterDef = {
   takeaway: "Structured output eliminates parsing fragility. When your agent returns a Pydantic model instead of raw text, downstream nodes can rely on typed fields rather than regex or string matching.",
   demos: [],
   backendCode: `/* lesson:begin */
-from pydantic import BaseModel, Field
-from langchain_openai import ChatOpenAI
+result = llm.invoke("Write a Python function that checks if a number is prime")
+print(result.content)
 
-class CodeOutput(BaseModel):
-    code: str = Field(description="The complete Python code to execute")
-    explanation: str = Field(description="Brief explanation of what the code does")
+from orion_agent.llm import structured
+from orion_agent.schemas import CodeOutput
 
-llm = ChatOpenAI(model="openai/gpt-4o-mini")
-
-# Without structured output — raw text
-raw_result = llm.invoke(
-    "Write a Python function that checks if a number is prime"
-)
-print(raw_result.content)
-
-# With structured output — validated Pydantic model
-structured_llm = llm.with_structured_output(CodeOutput)
-
-result = structured_llm.invoke(
-    "Write a Python function that checks if a number is prime"
-)
-print(f"Type: {type(result)}")
-print(f"Explanation: {result.explanation}")
-print(f"Code:\\n{result.code}")
+structured_llm = structured(llm, CodeOutput)
+result = structured_llm.invoke("Write a Python function that checks if a number is prime")
 /* lesson:end */`,
   backendFilename: "structured_output.py",
   chatConfig: {

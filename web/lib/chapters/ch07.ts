@@ -89,37 +89,30 @@ export const ch07: ChapterDef = {
   takeaway: "Multi-turn capability transforms a stateless function into a conversational partner. The key is appending each exchange to MessagesState so the agent has full context for every decision.",
   backendFilename: "multi_turn.py",
   backendCode: `/* lesson:begin */
-# Turn 1: Create a file
 messages = [
     SystemMessage(content=SYSTEM_PROMPT),
-    HumanMessage(
-        content="Create 'generated/logger.py' with a SimpleLogger "
-        "class that writes timestamped messages to a log file."
-    ),
+    HumanMessage(content="Create 'generated/logger.py' with a SimpleLogger class that writes timestamped messages to a log file."),
 ]
-
-result = app.invoke({"messages": messages})
+result = agent.invoke({"messages": messages})
 messages = result["messages"]
-
 print("=== Turn 1 complete ===")
-print(open("generated/logger.py").read()[:300])
+print(ws.read("generated/logger.py")[:300])
 
-# Turn 2: Modify it — the agent has full context from turn 1
-messages.append(
-    HumanMessage(
-        content="""
+messages.append(HumanMessage(content="""
 Now read the logger.py file and add these features:
 - Log levels: INFO, WARNING, ERROR
 - A method to filter logs by level
 Write the updated file.
-"""
-    )
-)
-
-result = app.invoke({"messages": messages})
-
+"""))
+result = agent.invoke({"messages": messages})
 print("=== Turn 2 complete ===")
-print(open("generated/logger.py").read())
+print_file(ws, "generated/logger.py")
+
+result = agent.invoke({"messages": [
+    SystemMessage(content=SYSTEM_PROMPT),
+    HumanMessage(content="Read generated/calculator.py, then create generated/test_calculator.py with pytest tests for all methods."),
+]})
+print_messages(result["messages"], width=100)
 /* lesson:end */`,
   chatConfig: {
     mode: "multi-turn",

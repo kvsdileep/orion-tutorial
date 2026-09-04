@@ -13,27 +13,15 @@ export const ch04: ChapterDef = {
   takeaway: "Code generation is just tool use with a purpose. The agent generates content via the LLM and persists it via write_file — the same pattern scales to any generative task.",
   backendFilename: "code_generation.py",
   backendCode: `/* lesson:begin */
-from langchain_core.messages import HumanMessage
+result = agent.invoke({"messages": [HumanMessage(content="""
+Create a Python file called 'generated/calculator.py' with a Calculator class that has:
+- add, subtract, multiply, divide methods
+- A history list that tracks all operations
+- A get_history method that returns the history
 
-# Task: Generate a Python file via the agent
-result = app.invoke({
-    "messages": [
-        HumanMessage(
-            content="""Create a Python file 'generated/calculator.py' with:
-- A Calculator class
-- Methods: add, subtract, multiply, divide
-- Each method should record operations in a history list
-- A get_history() method to retrieve past operations"""
-        )
-    ]
-})
-
-# Print what happened
-for msg in result["messages"]:
-    print(f"{msg.type}: {msg.content[:100] if msg.content else ''}")
-    if hasattr(msg, "tool_calls") and msg.tool_calls:
-        for tc in msg.tool_calls:
-            print(f"  -> {tc['name']}({list(tc['args'].keys())})")
+Write the file using the write_file tool.
+""")]})
+print_messages(result["messages"])
 /* lesson:end */`,
   chatConfig: {
     mode: "code-gen",

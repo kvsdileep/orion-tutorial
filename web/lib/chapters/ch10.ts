@@ -13,50 +13,47 @@ export const ch10: ChapterDef = {
   takeaway: "Reflection separates 'does it work?' from 'is it good?'. A dedicated reviewer node catches quality issues that unit tests miss, pushing the agent toward production-grade output.",
   demos: [],
   backendCode: `/* lesson:begin */
-from langgraph.graph import StateGraph, START, END
+reviewer = structured(llm, ReviewResult)
+test_code = "x = [1,2,3]\\nfor i in x:\\n  print(i)"
+review = reviewer.invoke(f"Review this Python code for quality (type hints, naming, PEP 8, efficiency):\\n\\n{test_code}")
+print(f"Approved: {review.approved}")
+print(f"Feedback: {review.feedback}")
 
-class ReviewResult(BaseModel):
-    approved: bool = Field(description="Whether the code meets quality standards")
-    feedback: str = Field(description="Specific feedback for improvement")
+import inspect
 
-reviewer_llm = llm.with_structured_output(ReviewResult)
+from orion_agent.graphs import self_correcting
 
-def review(state: FullAgentState) -> FullAgentState:
-    result = reviewer_llm.invoke(
-        f"Review this Python code for quality (type hints, naming, PEP 8, efficiency):\\n\\n{state['code']}"
-    )
-    if result.approved:
-        return {"status": "approved", "review_feedback": ""}
-    else:
-        return {"status": "review_failed", "review_feedback": result.feedback}
+for name, kind in self_correcting.FullAgentState.__annotations__.items():
+    print(f"  {name}: {kind}")
+print(inspect.getsource(self_correcting.build_full_agent))
 
-def route_after_execute(state) -> str:
-    if state["status"] == "executed":
-        return "review"
-    if state["attempts"] < state.get("max_attempts", 3):
-        return "retry"
-    return "give_up"
-
-def route_after_review(state) -> str:
-    if state["status"] == "approved":
-        return "done"
-    if state["attempts"] < state.get("max_attempts", 3):
-        return "revise"
-    return "done"
-
-graph = StateGraph(FullAgentState)
-graph.add_node("generate", generate_v2)
-graph.add_node("execute", execute_v2)
-graph.add_node("review", review)
-graph.add_edge(START, "generate")
-graph.add_edge("generate", "execute")
-graph.add_conditional_edges("execute", route_after_execute, {
-    "review": "review", "retry": "generate", "give_up": END
+result = full_agent.invoke({
+    "task": "Write a function to find all prime numbers up to n using the Sieve of Eratosthenes. Test it by printing primes up to 50.",
+    "rules": "",
+    "attempts": 0,
+    "max_attempts": 3,
 })
-graph.add_conditional_edges("review", route_after_review, {
-    "done": END, "revise": "generate"
-})
-full_agent = graph.compile()
+print(f"Status: {result['status']} (after {result['attempts']} attempt(s))")
+print(f"Output: {result['execution_result']}")
+print(f"\\nCode:\\n{result['code']}")
+
+for step in full_agent.stream({
+    "task": "Create a dataclass called 'Point' with x,y coordinates. Add methods for distance_to(other), midpoint(other), and __str__. Test with Point(3,4) and Point(0,0).",
+    "rules": "",
+    "attempts": 0,
+    "max_attempts": 3,
+}):
+    node_name, state = next(iter(step.items()))
+    if node_name == "generate":
+        print(f"[generate] Attempt {state.get('attempts', '?')}: {state.get('explanation', '')[:100]}")
+    elif node_name == "execute":
+        if state.get("error"):
+            print(f"[execute] FAILED: {state['error'][:150]}")
+        else:
+            print(f"[execute] OK: {state['execution_result'][:150]}")
+    elif node_name == "review":
+        print(f"[review] {state.get('status', '')}: {state.get('review_feedback', '')[:150]}")
+    print()
 /* lesson:end */`,
   backendFilename: "reflection_graph.py",
   chatConfig: {

@@ -13,7 +13,27 @@ export const ch13: ChapterDef = {
   takeaway: "Search is a loop the model drives, not a database you maintain. A small set of tools (grep, glob, read) plus a capable model finds the right code in a codebase of any size.",
   demos: [],
   backendCode: `/* lesson:begin */
-# synced from lessons/03_brain/ch13_codebase_search.py
+from orion_agent.search import repo_map, search_codebase
+
+for match in ws.grep("stream"):
+    print(f"{match.path}:{match.line}: {match.text}")
+print()
+print(repo_map(ws))
+print()
+print(search_codebase(ws, "streaming chat response"))
+
+from langchain_core.messages import HumanMessage
+
+from orion_agent.graphs.tool_agent import build_tool_agent
+from orion_agent.sandbox import LocalSandbox
+from orion_agent.tools import make_tools
+
+tools = make_tools(ws, LocalSandbox())
+searcher = build_tool_agent(llm, [tools["grep_files"], tools["glob_files"], tools["read_file"]])
+result = searcher.invoke({"messages": [HumanMessage(content=(
+    "How does the streaming response work in this project? Name the file and the function, in brief."
+))]})
+print_messages(result["messages"], width=160)
 /* lesson:end */`,
   backendFilename: "ch13_codebase_search.py",
   chatConfig: {

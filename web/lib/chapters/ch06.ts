@@ -13,31 +13,20 @@ export const ch06: ChapterDef = {
   takeaway: "astream_events gives you a firehose of typed events — token deltas, tool calls, state transitions. Filter by event kind to build responsive UIs that show exactly what the agent is doing at each moment.",
   backendFilename: "streaming.py",
   backendCode: `/* lesson:begin */
-async def stream_agent(user_message: str):
-    inputs = {
-        "messages": [
-            SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=user_message),
-        ]
-    }
-
-    async for event in app.astream_events(inputs, version="v2"):
-
+async def stream_agent(user_message: str) -> None:
+    inputs = {"messages": [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=user_message)]}
+    async for event in agent.astream_events(inputs, version="v2"):
         if event["event"] == "on_chat_model_stream":
             chunk = event["data"]["chunk"]
             if chunk.content:
                 print(chunk.content, end="", flush=True)
-
         elif event["event"] == "on_tool_start":
-            print(f"\\n--- Calling tool: {event['name']} ---")
-
+            print(f"\\n--- calling tool: {event['name']} ---")
         elif event["event"] == "on_tool_end":
-            print(f"--- Tool done ---\\n")
+            print("--- tool done ---\\n")
 
 
-await stream_agent(
-    "List files in 'generated' directory and read calculator.py"
-)
+run(stream_agent("List files in the 'generated' directory and read calculator.py"))
 /* lesson:end */`,
   chatConfig: {
     mode: "streaming",

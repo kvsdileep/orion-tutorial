@@ -13,37 +13,16 @@ export const ch02: ChapterDef = {
   takeaway: "Well-typed, well-documented tool functions let the LLM self-select the right tool at the right time. The @tool decorator bridges natural language intent to executable code.",
   backendFilename: "defining_tools.py",
   backendCode: `/* lesson:begin */
-from langchain_core.tools import tool
+from orion_agent.tools import basic_tools
 
-
-@tool
-def read_file(filepath: str) -> str:
-    """Read the contents of a file and return it as a string."""
-    with open(filepath, "r") as f:
-        return f.read()
-
-
-@tool
-def write_file(filepath: str, content: str) -> str:
-    """Write content to a file. Creates the file if it doesn't exist."""
-    os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
-    with open(filepath, "w") as f:
-        f.write(content)
-    return f"File written: {filepath}"
-
-
-@tool
-def list_directory(directory: str) -> str:
-    """List all files and directories in the given path."""
-    entries = os.listdir(directory)
-    return "\\n".join(entries)
-
-
-tools = [read_file, write_file, list_directory]
-
+tools = basic_tools(ws)
+# The decorator turns the docstring and type hints into the schema the model sees.
 for t in tools:
     print(f"{t.name}: {t.description}")
-    print(f"  Schema: {t.args_schema.model_json_schema()}\\n")
+    print(f"  schema: {t.args_schema.model_json_schema()['properties']}\\n")
+
+# Open src/orion_agent/tools.py to read the three functions. Every path is resolved
+# against workspace/ and an escape comes back as an "Error: ..." string.
 /* lesson:end */`,
   chatConfig: {
     mode: "tool-toggles",

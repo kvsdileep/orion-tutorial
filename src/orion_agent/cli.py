@@ -31,6 +31,7 @@ def main(argv: list[str] | None = None, root: Path = REPO_ROOT) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("reset", help="restore workspace/ from sample_project/")
     sub.add_parser("check-models", help="verify the model IDs exist on OpenRouter")
+    sub.add_parser("sync-web", help="copy web-tagged lesson cells into the site's chapter files")
     args = parser.parse_args(argv)
 
     if args.command == "reset":
@@ -44,6 +45,16 @@ def main(argv: list[str] | None = None, root: Path = REPO_ROOT) -> int:
             print("Missing on OpenRouter: " + ", ".join(missing))
             return 1
         print(f"OK: {FAST}, {STRONG}")
+        return 0
+
+    if args.command == "sync-web":
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("sync_web_chapters", root / "scripts" / "sync_web_chapters.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for name in module.sync(root):
+            print(f"synced {name}")
         return 0
 
     return 2

@@ -17,23 +17,13 @@ export const ch01: ChapterDef = {
   backendFilename: "setting_up_llm.py",
   backendCode: `/* lesson:begin */
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
+print("API key loaded" if os.getenv("OPENROUTER_API_KEY") else "API key NOT found: copy .env.example to .env")
 
-api_key = os.getenv("OPENROUTER_API_KEY")
-print("API Key loaded" if api_key else "API Key NOT found")
+from orion_agent.llm import FAST, get_llm
 
-from langchain_openai import ChatOpenAI
-
-llm = ChatOpenAI(
-    model="openai/gpt-4o-mini",
-    openai_api_key=api_key,
-    openai_api_base="https://openrouter.ai/api/v1",
-)
-
-response = llm.invoke("Say hello in one sentence.")
-print(response.content)
+llm = get_llm(FAST)
+print(llm.invoke("Say hello in one sentence.").content)
 /* lesson:end */`,
   chatConfig: {
     mode: "model-picker",

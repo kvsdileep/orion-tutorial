@@ -13,7 +13,22 @@ export const ch15: ChapterDef = {
   takeaway: "A loop only improves if feedback reaches the node that acts on it. Every prompt in this chapter is printed so you can see where the traceback, the review, and the human's note land.",
   demos: [],
   backendCode: `/* lesson:begin */
-# synced from lessons/03_brain/ch15_specialists.py
+print(orchestrator.RESEARCH_PROMPT)
+print(orchestrator.PLAN_PROMPT)
+print(inspect.getsource(orchestrator.check_task_paths))
+
+print(inspect.getsource(orchestrator.build_code_prompt))
+task = {"filepath": "config.py", "action": "modify", "description": "add DEFAULT_SYSTEM_PROMPT"}
+state = {
+    "codebase_context": "config.py: PAGE_TITLE, PAGE_ICON, MODEL, BASE_URL",
+    "status": "needs_revision",
+    "review_result": "Name the constant DEFAULT_SYSTEM_PROMPT and add a docstring.",
+    "human_feedback": "",
+}
+print(orchestrator.build_code_prompt(state, task, rules_root=ROOT))
+
+print(inspect.getsource(orchestrator.build_review_prompt))
+print(inspect.getsource(orchestrator.run_tests))
 /* lesson:end */`,
   backendFilename: "ch15_specialists.py",
   chatConfig: {

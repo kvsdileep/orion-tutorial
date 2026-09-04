@@ -15,7 +15,23 @@ export const ch05: ChapterDef = {
   codeContent: "",
   backendFilename: "ch05_rules.py",
   backendCode: `/* lesson:begin */
-# synced from lessons/01_hands/ch05_rules.py
+for rule in list_rules(ROOT):
+    print(f"{rule.source:40} always={rule.always_apply!s:5} globs={rule.globs}")
+
+SYSTEM_PROMPT = load_rules(ROOT, "workspace/generated/data_processor.py")
+print("\\n" + SYSTEM_PROMPT)
+
+agent = build_tool_agent(llm, tools, system_prompt=SYSTEM_PROMPT)
+result = agent.invoke({"messages": [HumanMessage(content="""
+Create a file 'generated/data_processor.py' with a DataProcessor class that:
+- Takes a list of dictionaries in __init__
+- Has filter_by(key, value) -> returns filtered list
+- Has group_by(key) -> returns dict of grouped items
+- Has summarize() -> returns count, keys present, sample row
+""")]})
+for msg in result["messages"]:
+    if msg.type == "ai" and not msg.tool_calls:
+        print(msg.content)
 /* lesson:end */`,
   chatConfig: {
     mode: "system-prompt",

@@ -13,33 +13,24 @@ export const ch03: ChapterDef = {
   takeaway: "The agent graph pattern — model node → should_continue → tool node → loop back — is the fundamental architecture of every LangGraph agent. Master this and everything else is an extension.",
   backendFilename: "agent_graph.py",
   backendCode: `/* lesson:begin */
-from langgraph.graph import StateGraph, START, END
-from langgraph.graph import MessagesState
-from langgraph.prebuilt import ToolNode
+llm_with_tools = llm.bind_tools(tools)
+response = llm_with_tools.invoke("What files are in the current directory?")
+print("Content:", response.content)
+print("Tool calls:", response.tool_calls)
 
+import inspect
 
-def agent(state: MessagesState):
-    return {"messages": [llm_with_tools.invoke(state["messages"])]}
+from orion_agent.graphs import tool_agent
 
-
-def should_continue(state: MessagesState):
-    last_message = state["messages"][-1]
-    if last_message.tool_calls:
-        return "tools"
-    return END
-
-
-graph = StateGraph(MessagesState)
-
-graph.add_node("agent", agent)
-graph.add_node("tools", ToolNode(tools))
-
-graph.add_edge(START, "agent")
-graph.add_conditional_edges("agent", should_continue, ["tools", END])
-graph.add_edge("tools", "agent")
-
-app = graph.compile()
+# Two nodes: agent and tools. One conditional edge: tool_calls or done.
+print(inspect.getsource(tool_agent.build_tool_agent))
+agent = tool_agent.build_tool_agent(llm, tools)
 print("Graph compiled")
+
+from langchain_core.messages import HumanMessage
+
+result = agent.invoke({"messages": [HumanMessage(content="List the files in the current directory")]})
+print_messages(result["messages"])
 /* lesson:end */`,
   chatConfig: {
     mode: "agent-chat",

@@ -13,7 +13,56 @@ export const ch09: ChapterDef = {
   takeaway: "Execution is the first review. A jail is not a sandbox, so the chapter names what shipped agents use instead; the loop itself is the same one Cursor's Bugbot runs.",
   demos: [],
   backendCode: `/* lesson:begin */
-# synced from lessons/02_self_awareness/ch09_self_correction.py
+from orion_agent.sandbox import LocalSandbox
+
+sandbox = LocalSandbox()
+# Open src/orion_agent/sandbox.py: isolated interpreter, scrubbed environment, temp cwd,
+# and a timeout that returns a result instead of raising.
+
+out = sandbox.run_python("import time; time.sleep(20)", timeout=3)
+print(out)
+print("ok:", out.ok, "timed_out:", out.timed_out)
+
+from orion_agent.graphs.self_correcting import AgentState
+
+for name, kind in AgentState.__annotations__.items():
+    print(f"  {name}: {kind}")
+
+import inspect
+
+from orion_agent.graphs import self_correcting
+
+print(inspect.getsource(self_correcting._generate_prompt))
+print(inspect.getsource(self_correcting._make_nodes))
+
+from orion_agent.graphs.self_correcting import build_bugbot
+
+bugbot = build_bugbot(coder, sandbox)
+print("Self-correcting graph compiled")
+
+result = bugbot.invoke({"task": "Print the first 10 Fibonacci numbers", "attempts": 0, "max_attempts": 3})
+print(f"Status: {result['status']}")
+print(f"Attempts: {result['attempts']}")
+print(f"Explanation: {result['explanation']}")
+print(f"Output: {result['execution_result']}")
+print(f"Code:\\n{result['code']}")
+
+inputs = {
+    "task": "Write the diffusers code to generate an image of a cat using the model 'CompVis/stable-diffusion-v1-4'",
+    "attempts": 0,
+    "max_attempts": 3,
+}
+for step in bugbot.stream(inputs):
+    node_name, state = next(iter(step.items()))
+    if node_name == "generate":
+        print(f"[generate] Attempt {state.get('attempts', '?')}")
+        print(f"  Code preview: {state['code'][:80]}...")
+    elif node_name == "execute":
+        if state.get("error"):
+            print(f"[execute] FAILED: {state['error'][:100]}")
+        else:
+            print(f"[execute] SUCCESS: {state['execution_result'][:100]}")
+    print()
 /* lesson:end */`,
   backendFilename: "ch09_self_correction.py",
   chatConfig: {

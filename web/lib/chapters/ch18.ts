@@ -24,37 +24,44 @@ for i, snapshot in enumerate(reversed(history)):
     print(f"  Step {i}: status={status}, files={n_files}, review_attempts={attempts}, next={next_node}")`,
   codeFilename: "time_travel.py",
   backendCode: `/* lesson:begin */
-from langgraph.checkpoint.memory import MemorySaver
-
-memory = MemorySaver()
-agent = graph.compile(checkpointer=memory)
-
-# Run the agent
-config = {"configurable": {"thread_id": "demo-1"}}
-result = agent.invoke({"feature_request": "Add system prompt"}, config=config)
-
-# Walk through the full checkpoint history
 history = list(agent.get_state_history(config))
-print(f"Total checkpoints: {len(history)}")
-
+print(f"Total checkpoints for demo-1: {len(history)}\\n")
 for i, snapshot in enumerate(reversed(history)):
-    status = snapshot.values.get("status", "initial")
-    plan = snapshot.values.get("plan", "")[:50]
-    n_files = len(snapshot.values.get("generated_code", []))
-    attempts = snapshot.values.get("review_attempts", 0)
-    next_node = snapshot.next
-    print(f"  Step {i}: status={status}, files={n_files}, next={next_node}")
+    values = snapshot.values
+    print(
+        f"  Step {i}: status={values.get('status', 'initial')}, files={len(values.get('generated_code', []))}, "
+        f"tests={values.get('test_attempts', 0)}, reviews={values.get('review_attempts', 0)}, next={snapshot.next}"
+    )
 
-# Replay from a specific checkpoint
-target_checkpoint = history[3]  # e.g., "After Code"
-branched_config = {
-    "configurable": {
-        "thread_id": "demo-1",
-        "checkpoint_id": target_checkpoint.config["configurable"]["checkpoint_id"],
-    }
-}
-# Resume from that point with a different decision
-result = agent.invoke(Command(resume="reject"), config=branched_config)
+config2 = {"configurable": {"thread_id": "demo-2"}}
+
+
+async def stream_second_feature() -> None:
+    async for step in agent.astream({"feature_request": (
+        "Add a 'Clear Chat' button to the sidebar in app.py that resets st.session_state.messages "
+        "to an empty list and reruns the app. Also add a message counter in the sidebar that shows "
+        "how many messages are in the conversation."
+    )}, config2):
+        node_name, output = next(iter(step.items()))
+        if node_name == "__interrupt__":
+            print("\\n[PAUSED] waiting for your approval")
+            continue
+        if not isinstance(output, dict):
+            continue
+        if node_name == "plan":
+            print(f"[PLAN] {output.get('plan', '')}")
+            for ft in output.get("file_tasks", []):
+                print(f"  [{ft['action']}] {ft['filepath']}")
+        elif node_name == "code":
+            for item in output.get("generated_code", []):
+                print(f"[CODE] {item['filepath']}: {item['explanation'][:80]}")
+        elif node_name == "test":
+            print(f"[TEST] {output.get('status')}")
+        elif node_name == "ai_review":
+            print(f"[REVIEW] {output.get('status')}: {output.get('review_result', '')[:100]}")
+
+
+run(stream_second_feature())
 /* lesson:end */`,
   backendFilename: "time_travel_debug.py",
   chatConfig: {

@@ -13,56 +13,43 @@ export const ch17: ChapterDef = {
   takeaway: "The Send API turns sequential bottlenecks into parallel pipelines. Combined with reducers for merging results, you can scale code generation linearly with the number of files in a plan.",
   demos: [],
   backendCode: `/* lesson:begin */
-from typing import Annotated
-from langgraph.types import Send
+import inspect
 
+from orion_agent.graphs import parallel
+from orion_agent.workspace import Workspace
 
-def add_to_list(existing: list, new: list) -> list:
-    """Reducer that merges parallel results into a single list."""
-    return existing + new
+snapshot = Workspace(ws.snapshot())  # the parallel demo works on a copy of the workspace
+for name, kind in parallel.ParallelState.__annotations__.items():
+    print(f"  {name}: {kind}")
+print(inspect.getsource(parallel.add_to_list))
+print(inspect.getsource(parallel.build_parallel_agent))
 
+result = parallel_agent.invoke({"feature_request": (
+    "Add two features to the chatbot: "
+    "1) A conversation export button in the sidebar that saves chat history as a .txt file. "
+    "2) A model selector dropdown in the sidebar that lets users pick from 3 models. "
+    "Update config.py with available models, chat.py to accept a model parameter, "
+    "and app.py for the UI controls. Accept the API key from the sidebar as before, do not change it."
+)})
+print("=" * 60)
+print(f"  {len(result['generated_code'])} files generated in parallel")
+print("=" * 60)
+for item in result["generated_code"]:
+    print(f"\\n--- {item['filepath']} ---")
+    print(f"  {item['explanation'][:120]}")
+    print(item["code"][:300])
+    if len(item["code"]) > 300:
+        print("  ...")
 
-class ParallelState(TypedDict):
-    feature_request: str
-    codebase_context: str
-    file_tasks: list[dict]
-    generated_code: Annotated[list[dict], add_to_list]
+from orion_agent.graphs.orchestrator import run_tests
+from orion_agent.sandbox import LocalSandbox
 
-
-def fan_out_to_coders(state: ParallelState) -> list[Send]:
-    """Dynamically create one Send per file task."""
-    sends = [
-        Send("parallel_code", {"task": task, "codebase_context": state["codebase_context"]})
-        for task in state["file_tasks"]
-    ]
-    print(f"  Fanning out to {len(sends)} parallel coders")
-    return sends
-
-
-def parallel_code_node(state: dict) -> dict:
-    """Each parallel coder generates one file."""
-    task = state["task"]
-    result = coder_llm.invoke(
-        f"Generate the complete file.\\nTask: {task['description']}\\nFile: {task['filepath']}"
-    )
-    print(f"  [parallel] Done: {Path(task['filepath']).name}")
-    return {"generated_code": [{"filepath": task["filepath"], "code": result.code, "explanation": result.explanation}]}
-
-
-def collect_node(state: ParallelState) -> ParallelState:
-    """Merge point — all parallel results are already collected via the reducer."""
-    print(f"  Collected {len(state['generated_code'])} files from parallel coders")
-    return state
-
-
-parallel_graph = StateGraph(ParallelState)
-parallel_graph.add_node("plan", parallel_plan)
-parallel_graph.add_node("parallel_code", parallel_code_node)
-parallel_graph.add_node("collect", collect_node)
-parallel_graph.add_edge(START, "plan")
-parallel_graph.add_conditional_edges("plan", fan_out_to_coders)
-parallel_graph.add_edge("parallel_code", "collect")
-parallel_graph.add_edge("collect", END)
+for item in result["generated_code"]:
+    snapshot.write(item["filepath"], item["code"])
+    print(f"  Applied: {item['filepath']}")
+output, ok = run_tests(snapshot, LocalSandbox(), [i["filepath"] for i in result["generated_code"]])
+print("\\nTests:", "PASS" if ok else "FAIL")
+print(output)
 /* lesson:end */`,
   backendFilename: "parallel_gen.py",
   chatConfig: {
