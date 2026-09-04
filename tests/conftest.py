@@ -54,7 +54,7 @@ def ws_dir(tmp_path: Path) -> Path:
         'import streamlit as st\nfrom chat import stream_response\n\ndef main():\n    st.title("Chat")\n'
     )
     (ws / "chat.py").write_text(
-        "def stream_response(client, messages):\n    for chunk in client.stream(messages):\n        yield chunk\n"
+        "\ndef stream_response(client, messages):\n    for chunk in client.stream(messages):\n        yield chunk\n"
     )
     (ws / "config.py").write_text('PAGE_TITLE = "My ChatBot"\nMODEL = "openai/gpt-4o-mini"\n')
     return ws
