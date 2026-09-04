@@ -7,6 +7,7 @@ from orion_agent.llm import FAST, STRONG
 def make_root(tmp_path):
     (tmp_path / "sample_project").mkdir()
     (tmp_path / "sample_project" / "config.py").write_text("X = 1\n")
+    (tmp_path / "sample_project" / "test_app.py").write_text("def test_x():\n    assert True\n")
     ws = tmp_path / "workspace"
     ws.mkdir()
     (ws / "generated").mkdir()
@@ -18,7 +19,7 @@ def make_root(tmp_path):
 def test_reset_restores_workspace_from_sample_project(tmp_path):
     root = make_root(tmp_path)
     assert cli.main(["reset"], root=root) == 0
-    assert sorted(p.name for p in (root / "workspace").iterdir()) == ["config.py"]
+    assert sorted(p.name for p in (root / "workspace").iterdir()) == ["config.py", "test_app.py"]
     assert (root / "workspace" / "config.py").read_text() == "X = 1\n"
 
 
