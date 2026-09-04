@@ -84,9 +84,26 @@ class LocalSandbox:
         return ExecResult(stdout=proc.stdout, stderr=proc.stderr, returncode=proc.returncode)
 
     def run_python(self, code: str, *, timeout: float = 10, cwd: Path | None = None) -> ExecResult:
-        if cwd is not None:
-            code = f"import sys; sys.path.insert(0, {str(Path(cwd).resolve())!r})\n" + code
-        return self.run([self.python, "-I", "-c", code], cwd=cwd, timeout=timeout)
+        """Run a Python snippet, importable from `cwd`, and return the result instead of raising."""
+        if cwd is None:
+            return self.run([self.python, "-I", "-c", code], timeout=timeout)
+        # The snippet lives in its own file so a first-line `from __future__ import ...` still
+        # compiles. Isolated mode drops the working directory from sys.path, so put it back.
+        workdir = Path(cwd).resolve()
+        script_dir = Path(tempfile.mkdtemp(prefix="orion-snip-"))
+        script = script_dir / "snippet.py"
+        script.write_text(code)
+        bootstrap = (
+            "import pathlib, sys\n"
+            f"sys.path.insert(0, {str(workdir)!r})\n"
+            f"path = {str(script)!r}\n"
+            "source = pathlib.Path(path).read_text()\n"
+            "exec(compile(source, path, 'exec'), {'__name__': '__main__', '__file__': path})\n"
+        )
+        try:
+            return self.run([self.python, "-I", "-c", bootstrap], cwd=workdir, timeout=timeout)
+        finally:
+            shutil.rmtree(script_dir, ignore_errors=True)
 
 
 class DockerSandbox:

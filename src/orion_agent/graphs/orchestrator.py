@@ -21,7 +21,7 @@ from orion_agent.rules import load_rules
 from orion_agent.sandbox import Sandbox
 from orion_agent.schemas import CodeResult, Plan, ReviewResult
 from orion_agent.search import repo_map
-from orion_agent.workspace import Workspace
+from orion_agent.workspace import Workspace, WorkspaceError
 
 
 class OrchestratorState(TypedDict, total=False):
@@ -37,6 +37,7 @@ class OrchestratorState(TypedDict, total=False):
     human_decision: str
     human_feedback: str
     status: str
+    error: str
 
 
 RESEARCH_PROMPT = (
@@ -51,7 +52,26 @@ PLAN_PROMPT = (
 )
 
 
+def check_task_paths(ws: Workspace, file_tasks: list[dict]) -> list[str]:
+    """Return one message per planned filepath that the workspace would refuse to write."""
+    problems = []
+    for task in file_tasks:
+        filepath = task.get("filepath") or ""
+        if not filepath:
+            problems.append("a file task has no filepath")
+            continue
+        try:
+            full = ws.resolve(filepath)
+        except WorkspaceError as exc:
+            problems.append(str(exc))
+            continue
+        if full.is_dir():
+            problems.append(f"filepath is a directory: {filepath}")
+    return problems
+
+
 def build_code_prompt(state: dict, task: dict, rules_root: str | Path | None = None) -> str:
+    """Build the coder prompt for one file task, folding in rules and the latest feedback."""
     parts = [
         "Generate the complete Python code for this file.\n\n"
         f"File: {task['filepath']}\nAction: {task['action']}\nDescription: {task['description']}"
@@ -62,7 +82,11 @@ def build_code_prompt(state: dict, task: dict, rules_root: str | Path | None = N
             parts.append(f"Follow these rules:\n{rules}")
     parts.append(f"Codebase context:\n{state.get('codebase_context', '')}")
     if state.get("test_output") and state.get("status") in ("tests_failed", "human_rejected"):
-        parts.append(f"Test output from the last run (fix these failures):\n{state['test_output']}")
+        # After a human reject the tests may well have passed, so only the failure path says "fix".
+        label = "Test output from the last run"
+        if state["status"] == "tests_failed":
+            label += " (fix these failures)"
+        parts.append(f"{label}:\n{state['test_output']}")
     if state.get("status") == "needs_revision" and state.get("review_result"):
         parts.append(f"Reviewer feedback (address every point):\n{state['review_result']}")
     if state.get("human_feedback"):
@@ -119,15 +143,21 @@ def build_orchestrator(
             summary = str(research["messages"][-1].content)
             context = "\n\n".join([context, *notes, f"Research summary:\n{summary}"])
         plan: Plan = planner.invoke(PLAN_PROMPT.format(request=request, context=context))
+        file_tasks = [t.model_dump() for t in plan.file_tasks]
+        problems = check_task_paths(ws, file_tasks)
         return {
             "codebase_context": context,
             "plan": plan.summary,
-            "file_tasks": [t.model_dump() for t in plan.file_tasks],
-            "status": "planned",
+            "file_tasks": file_tasks,
+            "status": "path_rejected" if problems else "planned",
+            "error": "\n".join(problems),
             "test_attempts": 0,
             "review_attempts": 0,
             "human_feedback": "",
         }
+
+    def route_after_plan(state: OrchestratorState) -> Literal["code", "__end__"]:
+        return END if state["status"] == "path_rejected" else "code"
 
     def code_node(state: OrchestratorState) -> dict:
         generated = []
@@ -143,6 +173,8 @@ def build_orchestrator(
             for item in state["generated_code"]:
                 scratch.write(item["filepath"], item["code"])
             output, ok = run_tests(scratch, sandbox, [i["filepath"] for i in state["generated_code"]])
+        except (WorkspaceError, OSError) as exc:
+            return {"error": str(exc), "status": "path_rejected"}
         finally:
             shutil.rmtree(snapshot, ignore_errors=True)
         return {
@@ -151,7 +183,9 @@ def build_orchestrator(
             "status": "tests_passed" if ok else "tests_failed",
         }
 
-    def route_after_test(state: OrchestratorState) -> Literal["ai_review", "code", "human_review"]:
+    def route_after_test(state: OrchestratorState) -> Literal["ai_review", "code", "human_review", "__end__"]:
+        if state["status"] == "path_rejected":
+            return END
         if state["status"] == "tests_passed":
             return "ai_review"
         if state["test_attempts"] < max_test_attempts:
@@ -202,10 +236,15 @@ def build_orchestrator(
 
     def apply_node(state: OrchestratorState) -> dict:
         for item in state["generated_code"]:
-            ws.write(item["filepath"], item["code"])
+            try:
+                ws.write(item["filepath"], item["code"])
+            except (WorkspaceError, OSError) as exc:
+                return {"error": str(exc), "status": "apply_failed"}
         return {"status": "applied"}
 
     def verify_node(state: OrchestratorState) -> dict:
+        if state["status"] == "apply_failed":
+            return {}
         output, ok = run_tests(ws, sandbox, [i["filepath"] for i in state["generated_code"]])
         return {"test_output": output, "status": "done" if ok else "verify_failed"}
 
@@ -218,9 +257,9 @@ def build_orchestrator(
     graph.add_node("apply", apply_node)
     graph.add_node("verify", verify_node)
     graph.add_edge(START, "plan")
-    graph.add_edge("plan", "code")
+    graph.add_conditional_edges("plan", route_after_plan, {"code": "code", END: END})
     graph.add_edge("code", "test")
-    graph.add_conditional_edges("test", route_after_test, {"ai_review": "ai_review", "code": "code", "human_review": "human_review"})
+    graph.add_conditional_edges("test", route_after_test, {"ai_review": "ai_review", "code": "code", "human_review": "human_review", END: END})
     graph.add_conditional_edges("ai_review", route_after_review, {"human_review": "human_review", "code": "code"})
     graph.add_conditional_edges("human_review", route_after_human, {"apply": "apply", "code": "code"})
     graph.add_edge("apply", "verify")

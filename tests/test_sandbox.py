@@ -39,6 +39,17 @@ def test_cwd_is_importable(tmp_path):
     assert r.stdout.strip() == "T"
 
 
+def test_future_import_still_compiles_with_a_cwd(tmp_path):
+    r = LocalSandbox().run_python("from __future__ import annotations\nprint(1)", cwd=tmp_path)
+    assert r.ok, r.stderr
+    assert r.stdout.strip() == "1"
+
+
+def test_snippet_file_is_not_left_in_the_cwd(tmp_path):
+    LocalSandbox().run_python("print('x')", cwd=tmp_path)
+    assert list(tmp_path.iterdir()) == []
+
+
 def test_run_argv_without_shell(tmp_path):
     r = LocalSandbox().run(["echo", "a && b"], cwd=tmp_path)
     assert r.stdout.strip() == "a && b"

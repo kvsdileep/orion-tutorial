@@ -27,6 +27,17 @@ def test_missing_file_is_an_error_string(ws_dir):
     assert t["read_file"].invoke({"filepath": "nope.py"}).startswith("Error: file not found")
 
 
+def test_read_file_on_a_directory_is_an_error_string(ws_dir):
+    t = make_tools(Workspace(ws_dir), LocalSandbox())
+    (ws_dir / "pkg").mkdir()
+    assert t["read_file"].invoke({"filepath": "pkg"}).startswith("Error:")
+
+
+def test_write_file_on_a_directory_is_an_error_string(ws_dir):
+    t = make_tools(Workspace(ws_dir), LocalSandbox())
+    assert t["write_file"].invoke({"filepath": ".", "content": "x"}).startswith("Error:")
+
+
 def test_grep_and_glob(ws_dir):
     t = make_tools(Workspace(ws_dir), LocalSandbox())
     assert "chat.py:2:" in t["grep_files"].invoke({"pattern": "def stream_response"})

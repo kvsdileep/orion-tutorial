@@ -18,7 +18,7 @@ def make_tools(ws: Workspace, sandbox: Sandbox) -> dict[str, BaseTool]:
             return ws.read(filepath)
         except FileNotFoundError:
             return f"Error: file not found: {filepath}"
-        except WorkspaceError as exc:
+        except (WorkspaceError, OSError, UnicodeError) as exc:
             return f"Error: {exc}"
 
     @tool
@@ -26,7 +26,7 @@ def make_tools(ws: Workspace, sandbox: Sandbox) -> dict[str, BaseTool]:
         """Write content to a file inside the workspace, creating directories as needed."""
         try:
             return f"File written: {ws.write(filepath, content)}"
-        except WorkspaceError as exc:
+        except (WorkspaceError, OSError, UnicodeError) as exc:
             return f"Error: {exc}"
 
     @tool

@@ -76,6 +76,26 @@ def test_failed_tests_route_back_to_coder_with_traceback(ws_dir):
     assert "Test output" in coder.prompts[1]
 
 
+def test_failed_tests_at_the_cap_route_to_human_review(ws_dir):
+    coder = Scripted(BROKEN)
+    graph = make(ws_dir, coder, Scripted(OK), max_test_attempts=2)
+    paused = run(graph, "x", {"configurable": {"thread_id": "t8"}})
+    payload = paused["__interrupt__"][0].value
+    assert "SyntaxError" in payload["test_output"]
+    assert len(coder.prompts) == 2  # the cap stopped the retry loop
+    assert payload["review_result"] == ""  # the AI reviewer never saw failing code
+
+
+def test_escaping_filepath_is_rejected_at_plan_time(ws_dir, tmp_path):
+    escape = Plan(summary="escape", file_tasks=[FileTask(filepath="../outside.py", description="x", action="create")])
+    coder = Scripted(GOOD)
+    result = run(make(ws_dir, coder, Scripted(OK), planner=Scripted(escape)), "x", {"configurable": {"thread_id": "t9"}})
+    assert result["status"] == "path_rejected"
+    assert "escapes the workspace" in result["error"]
+    assert not coder.prompts  # the coder never ran
+    assert not (tmp_path / "outside.py").exists()
+
+
 def test_auto_approve_after_review_cap(ws_dir):
     reviewer = Scripted(REJECT)
     graph = make(ws_dir, Scripted(GOOD), reviewer, max_review_attempts=2)
@@ -94,6 +114,8 @@ def test_human_reject_resets_counters_and_feeds_reason(ws_dir):
     paused_again = resume(graph, {"decision": "reject", "feedback": "call it TAGLINE"}, config)
     assert "call it TAGLINE" in coder.prompts[-1]
     assert "Human feedback" in coder.prompts[-1]
+    assert "Test output from the last run:" in coder.prompts[-1]  # the tests passed; nothing to fix
+    assert "fix these failures" not in coder.prompts[-1]
     assert len(reviewer.prompts) == 3  # the AI reviewer is consulted again after a human reject
     state = asyncio.run(graph.aget_state(config)).values
     assert state["review_attempts"] == 1 and state["test_attempts"] == 1
