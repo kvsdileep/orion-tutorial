@@ -10,6 +10,7 @@ microVM. Swap in DockerSandbox when you need that.
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -59,7 +60,10 @@ class LocalSandbox:
         return {k: os.environ[k] for k in _SAFE_ENV_KEYS if k in os.environ}
 
     def run(self, argv: list[str], *, cwd: Path | None = None, timeout: float = 30) -> ExecResult:
-        workdir = Path(cwd) if cwd is not None else Path(tempfile.mkdtemp(prefix="orion-sbx-"))
+        auto_dir = None
+        if cwd is None:
+            auto_dir = Path(tempfile.mkdtemp(prefix="orion-sbx-"))
+        workdir = Path(cwd) if cwd is not None else auto_dir
         try:
             proc = subprocess.run(
                 list(argv),
@@ -74,6 +78,9 @@ class LocalSandbox:
             return ExecResult(stdout=stdout, stderr=f"Timed out after {timeout}s", returncode=-1, timed_out=True)
         except FileNotFoundError as exc:
             return ExecResult(stdout="", stderr=str(exc), returncode=127)
+        finally:
+            if auto_dir is not None:
+                shutil.rmtree(auto_dir, ignore_errors=True)
         return ExecResult(stdout=proc.stdout, stderr=proc.stderr, returncode=proc.returncode)
 
     def run_python(self, code: str, *, timeout: float = 10, cwd: Path | None = None) -> ExecResult:

@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from orion_agent.sandbox import DockerSandbox, ExecResult, LocalSandbox
@@ -52,3 +54,14 @@ def test_summary_formats_output():
 def test_docker_sandbox_is_a_stub():
     with pytest.raises(NotImplementedError):
         DockerSandbox()
+
+
+def test_auto_cwd_is_removed_and_caller_cwd_is_kept(tmp_path):
+    sandbox = LocalSandbox()
+    r = sandbox.run_python("import os; print(os.getcwd())")
+    auto_dir = r.stdout.strip()
+    assert "orion-sbx-" in auto_dir
+    assert not os.path.exists(auto_dir)
+
+    sandbox.run_python("print('x')", cwd=tmp_path)
+    assert tmp_path.exists()
