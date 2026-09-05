@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
+import inspect
 from pathlib import Path
 from typing import Any, Coroutine
 
@@ -34,7 +35,14 @@ def repo_root(start: Path | None = None) -> Path:
 
 def setup() -> tuple[Path, Workspace]:
     """Load .env and return (repo root, the workspace/ Workspace)."""
-    root = repo_root()
+    start = Path.cwd()
+    frame = inspect.currentframe()
+    caller = frame.f_back if frame else None
+    if caller:
+        caller_file = Path(caller.f_code.co_filename)
+        if caller_file.is_file():
+            start = caller_file
+    root = repo_root(start)
     load_dotenv(root / ".env")
     return root, Workspace(root / "workspace")
 

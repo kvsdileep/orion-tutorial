@@ -17,7 +17,7 @@ uv run orion check-models   # both model IDs must resolve on OpenRouter
 uv run orion reset          # copies sample_project/ into workspace/
 ```
 
-Open the repository folder in Cursor (not a subfolder) and select the `.venv` interpreter when the interactive window asks.
+Open the repository folder in Cursor (not a subfolder). The workspace interpreter is `.venv` (Python 3.13). If Shift+Enter fails with `No module named ipykernel_launcher`, the kernel is Homebrew 3.14 — pick **Orion (Python 3.13)** from the kernel picker, or Command Palette → “Python: Select Interpreter” → `.venv/bin/python`.
 
 ## Cell tags
 
