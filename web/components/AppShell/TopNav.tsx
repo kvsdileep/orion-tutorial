@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, Terminal, BookOpen, Rocket } from "lucide-react";
+import { Terminal, BookOpen, Rocket } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home", icon: Terminal },
   { href: "/curriculum", label: "Curriculum", icon: BookOpen },
-  { href: "/playground", label: "Playground", icon: Bot },
   { href: "/curriculum/codebase-rag", label: "Full Agent", icon: Rocket },
 ];
 
