@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1590" height="674" viewBox="0 0 1590 674" font-family="Helvetica, Arial, sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1e1e1e"/></marker></defs>
+<rect width="1590" height="674" fill="#ffffff"/>
+<text x="40" y="44" font-size="24" fill="#1e1e1e">Beat 30: generate, execute, review (ch10 C19)</text>
+<polyline points="405.0,120.0 405.0,190.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<polyline points="405.0,254.0 405.0,370.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<polyline points="405.0,434.0 405.0,550.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<text x="450.0" y="500.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">passed</text>
+<polyline points="330.0,402.0 230.0,402.0 230.0,222.0 330.0,222.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)" stroke-dasharray="8,6"/>
+<text x="120.0" y="300.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">failed, attempts &lt; max:</text>
+<text x="120.0" y="317.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">retry with the error</text>
+<polyline points="480.0,402.0 708.0,402.0 708.0,562.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<text x="830.0" y="402.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">failed at max: give up</text>
+<polyline points="480.0,582.0 660.0,582.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<text x="600.0" y="615.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">approved</text>
+<polyline points="480.0,582.0 560.0,582.0 560.0,222.0 480.0,222.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)" stroke-dasharray="8,6"/>
+<text x="660.0" y="290.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">rejected: the feedback</text>
+<text x="660.0" y="307.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">goes into the prompt</text>
+<rect x="357" y="80" width="96" height="40" rx="12" fill="#d0ebff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="405.0" y="105.2" font-size="15" fill="#1e1e1e" text-anchor="middle">START</text>
+<ellipse cx="405.0" cy="222.0" rx="75.0" ry="32.0" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
+<text x="405.0" y="228.3" font-size="18" fill="#1e1e1e" text-anchor="middle">generate</text>
+<ellipse cx="405.0" cy="402.0" rx="75.0" ry="32.0" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
+<text x="405.0" y="408.3" font-size="18" fill="#1e1e1e" text-anchor="middle">execute</text>
+<ellipse cx="405.0" cy="582.0" rx="75.0" ry="32.0" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
+<text x="405.0" y="588.3" font-size="18" fill="#1e1e1e" text-anchor="middle">review</text>
+<rect x="660" y="562" width="96" height="40" rx="12" fill="#d0ebff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="708.0" y="587.2" font-size="15" fill="#1e1e1e" text-anchor="middle">END</text>
+<text x="940" y="108" font-size="17" fill="#1e1e1e">Second state table</text>
+<rect x="940" y="120" width="90" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="142" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">step</text>
+<rect x="1030" y="120" width="70" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="142" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="120" width="60" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="142" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">code</text>
+<rect x="1160" y="120" width="120" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="142" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">error</text>
+<rect x="1280" y="120" width="170" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="142" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">review</text>
+<rect x="1450" y="120" width="80" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="142" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">attempt</text>
+<rect x="940" y="154" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="176" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">generate</text>
+<rect x="1030" y="154" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="176" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="154" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="176" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v1</text>
+<rect x="1160" y="154" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="176" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1280" y="154" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="176" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1450" y="154" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="176" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">1</text>
+<rect x="940" y="188" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="210" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">execute</text>
+<rect x="1030" y="188" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="210" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="188" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="210" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v1</text>
+<rect x="1160" y="188" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="210" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">traceback_v1</text>
+<rect x="1280" y="188" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="210" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1450" y="188" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="210" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">1</text>
+<rect x="940" y="222" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="244" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">generate</text>
+<rect x="1030" y="222" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="244" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="222" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="244" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v2</text>
+<rect x="1160" y="222" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="244" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1280" y="222" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="244" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1450" y="222" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="244" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">2</text>
+<rect x="940" y="256" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="278" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">execute</text>
+<rect x="1030" y="256" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="278" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="256" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="278" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v2</text>
+<rect x="1160" y="256" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="278" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">- (ran)</text>
+<rect x="1280" y="256" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="278" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1450" y="256" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="278" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">2</text>
+<rect x="940" y="290" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="312" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">review</text>
+<rect x="1030" y="290" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="312" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="290" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="312" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v2</text>
+<rect x="1160" y="290" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="312" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1280" y="290" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="312" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">rejected: feedback_1</text>
+<rect x="1450" y="290" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="312" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">2</text>
+<rect x="940" y="324" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="346" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">generate</text>
+<rect x="1030" y="324" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="346" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="324" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="346" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v3</text>
+<rect x="1160" y="324" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="346" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1280" y="324" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="346" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1450" y="324" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="346" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">3</text>
+<rect x="940" y="358" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">execute</text>
+<rect x="1030" y="358" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="358" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v3</text>
+<rect x="1160" y="358" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">- (ran)</text>
+<rect x="1280" y="358" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1450" y="358" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">3</text>
+<rect x="940" y="392" width="90" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="985.0" y="414" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">review</text>
+<rect x="1030" y="392" width="70" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1065.0" y="414" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">task</text>
+<rect x="1100" y="392" width="60" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1130.0" y="414" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">v3</text>
+<rect x="1160" y="392" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1220.0" y="414" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
+<rect x="1280" y="392" width="170" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1365.0" y="414" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">approved</text>
+<rect x="1450" y="392" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+<text x="1490.0" y="414" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">3</text>
+<text x="40" y="736" font-size="15" fill="#495057">Draw both orders for the cost argument: execute then review (reviewer runs once, on code that works)</text>
+<text x="40" y="758" font-size="15" fill="#495057">versus review then execute (reviewer runs three times, twice on code that did not). One shared attempts counter.</text>
+</svg>
