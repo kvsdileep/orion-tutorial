@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bot, Terminal, BookOpen, Rocket } from "lucide-react";
+import { SITE_MODE } from "@/lib/siteMode";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home", icon: Terminal },
   { href: "/curriculum", label: "Curriculum", icon: BookOpen },
   { href: "/playground", label: "Playground", icon: Bot },
   { href: "/curriculum/codebase-rag", label: "Full Agent", icon: Rocket },
-];
+].filter((item) => SITE_MODE !== "reader" || item.href !== "/playground");
 
 export function TopNav() {
   const pathname = usePathname();

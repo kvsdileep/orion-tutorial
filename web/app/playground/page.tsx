@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { SITE_MODE } from "@/lib/siteMode";
 import { ChapterLayout } from "@/components/IDE/ChapterLayout";
 import { playground } from "@/lib/playground";
 
@@ -9,5 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default function PlaygroundPage() {
+  if (SITE_MODE === "reader") notFound();
   return <ChapterLayout chapter={playground} defaultView="files" />;
 }
