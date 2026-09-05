@@ -33,7 +33,21 @@ The site deploys from this repository on Vercel.
 | Environment variables | none |
 | Production branch | `main` |
 
-Production: https://orion-tutorial-brown.vercel.app (Vercel project `orion-tutorial`, team `dileep-growthschools-projects`).
+Two deployments build from this folder:
+
+| Site | Mode | Vercel project |
+|---|---|---|
+| https://orion-tutorial-brown.vercel.app | `ide` (default): editor-style chapter pages with the canned demos | `orion-tutorial` |
+| https://orion-tutorial-reader.vercel.app | `reader`: plain chapter pages (intro, code, takeaway), no editor layout | `orion-tutorial-reader`, env `NEXT_PUBLIC_SITE_MODE=reader` |
+
+Both are static. Neither calls a model or an API; every chat reply on the ide site is a fixture in `lib/chapters`. The mode is read at build time from `NEXT_PUBLIC_SITE_MODE` (see `lib/siteMode.ts`).
+
+To deploy the reader site from this machine, link to its project first, then relink to the main one afterwards:
+
+```bash
+npx vercel link --yes --project orion-tutorial-reader && npx vercel deploy --prod --yes
+npx vercel link --yes --project orion-tutorial
+```
 
 The project has Root Directory `web` and the repo root is linked to it (`.vercel/`, gitignored). To deploy from this machine:
 

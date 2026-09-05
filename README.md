@@ -2,7 +2,7 @@
 
 Build an AI coding agent with LangChain and LangGraph, one capability at a time: tools, a self-correcting loop, then a planner, a reviewer, a human gate, and parallel coders, all working on a small Streamlit app.
 
-**Site:** https://orion-tutorial-brown.vercel.app
+**Site:** https://orion-tutorial-brown.vercel.app (editor-style chapters) and https://orion-tutorial-reader.vercel.app (plain reading version)
 
 ## What is here
 
