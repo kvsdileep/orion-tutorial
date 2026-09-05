@@ -1,28 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1390" height="684" viewBox="0 0 1390 684" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1390" height="778" viewBox="0 0 1390 778" font-family="Helvetica, Arial, sans-serif">
 <defs><marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1e1e1e"/></marker></defs>
-<rect width="1390" height="684" fill="#ffffff"/>
-<text x="40" y="44" font-size="24" fill="#1e1e1e">Beat 27: generate, execute, retry (ch09 C13)</text>
-<polyline points="405.0,120.0 405.0,190.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
-<polyline points="405.0,254.0 405.0,370.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
-<polyline points="480.0,402.0 640.0,402.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
-<text x="560.0" y="380.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">success</text>
-<polyline points="330.0,402.0 230.0,402.0 230.0,222.0 330.0,222.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)" stroke-dasharray="8,6"/>
-<text x="120.0" y="300.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">failed, attempts &lt; max:</text>
-<text x="120.0" y="317.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">retry with the error</text>
-<polyline points="405.0,434.0 405.0,560.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
-<text x="500.0" y="500.0" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">failed at max attempts</text>
-<polyline points="480.0,592.0 688.0,592.0 688.0,422.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<rect width="1390" height="778" fill="#ffffff"/>
+<text x="40" y="50" font-size="30" font-weight="600" fill="#1e1e1e">Self-correction: generate, execute, retry</text>
+<polyline points="405.8,120.0 408.6,190.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<polyline points="410.0,258.0 410.0,370.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<polyline points="490.0,403.4 640.0,402.3" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<text x="560.0" y="380.0" font-size="16" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">success</text>
+<polyline points="330.0,404.0 230.0,402.0 230.0,222.0 330.0,224.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)" stroke-dasharray="8,6"/>
+<text x="120.0" y="300.0" font-size="16" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">failed, attempts &lt; max:</text>
+<text x="120.0" y="319.0" font-size="16" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">retry with the error</text>
+<polyline points="410.0,438.0 410.0,560.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<text x="500.0" y="500.0" font-size="16" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">failed at max attempts</text>
+<polyline points="490.0,594.0 688.0,592.0 688.0,422.0" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
 <rect x="357" y="80" width="96" height="40" rx="12" fill="#d0ebff" stroke="#1e1e1e" stroke-width="2"/>
-<text x="405.0" y="105.2" font-size="15" fill="#1e1e1e" text-anchor="middle">START</text>
-<ellipse cx="405.0" cy="222.0" rx="75.0" ry="32.0" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
-<text x="405.0" y="228.3" font-size="18" fill="#1e1e1e" text-anchor="middle">generate</text>
-<ellipse cx="405.0" cy="402.0" rx="75.0" ry="32.0" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
-<text x="405.0" y="408.3" font-size="18" fill="#1e1e1e" text-anchor="middle">execute</text>
-<ellipse cx="405.0" cy="592.0" rx="75.0" ry="32.0" fill="#fff3bf" stroke="#1e1e1e" stroke-width="2"/>
-<text x="405.0" y="598.3" font-size="18" fill="#1e1e1e" text-anchor="middle">give up</text>
+<text x="405.0" y="106.0" font-size="17" fill="#1e1e1e" text-anchor="middle">START</text>
+<ellipse cx="410.0" cy="224.0" rx="80.0" ry="34.0" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
+<text x="410.0" y="231.3" font-size="21" fill="#1e1e1e" text-anchor="middle">generate</text>
+<ellipse cx="410.0" cy="404.0" rx="80.0" ry="34.0" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
+<text x="410.0" y="411.4" font-size="21" fill="#1e1e1e" text-anchor="middle">execute</text>
+<ellipse cx="410.0" cy="594.0" rx="80.0" ry="34.0" fill="#fff3bf" stroke="#1e1e1e" stroke-width="2"/>
+<text x="410.0" y="601.4" font-size="21" fill="#1e1e1e" text-anchor="middle">give up</text>
 <rect x="640" y="382" width="96" height="40" rx="12" fill="#d0ebff" stroke="#1e1e1e" stroke-width="2"/>
-<text x="688.0" y="407.2" font-size="15" fill="#1e1e1e" text-anchor="middle">END</text>
-<text x="800" y="108" font-size="17" fill="#1e1e1e">State table: fill it row by row with the room</text>
+<text x="688.0" y="407.9" font-size="17" fill="#1e1e1e" text-anchor="middle">END</text>
+<text x="800" y="108" font-size="17" fill="#1e1e1e">The state after each step</text>
 <rect x="800" y="120" width="90" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
 <text x="845.0" y="142" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">step</text>
 <rect x="890" y="120" width="70" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
@@ -119,6 +119,6 @@
 <text x="1185.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">- (success)</text>
 <rect x="1250" y="358" width="80" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
 <text x="1290.0" y="380" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">3</text>
-<text x="40" y="716" font-size="15" fill="#495057">Ask before each cell: which fields have values at START? After generate? Is error filled after</text>
-<text x="40" y="738" font-size="15" fill="#495057">generate? (No: generate cannot run code.) Does generate know the error on attempt 2? (Yes, it is in the prompt.)</text>
+<text x="40" y="698" font-size="19" fill="#343a40">generate writes the code. execute runs it in the sandbox. A failure goes back to generate with the error</text>
+<text x="40" y="728" font-size="19" fill="#343a40">in the prompt. After three failures the graph gives up and reports the last state.</text>
 </svg>

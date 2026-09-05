@@ -8,8 +8,8 @@
    "type": "text",
    "x": 40,
    "y": 20,
-   "width": 900,
-   "height": 32,
+   "width": 1200,
+   "height": 40,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -29,14 +29,14 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "Beat 44: the orchestrator (ch16 C13). 7 nodes, 4 conditional routes",
-   "originalText": "Beat 44: the orchestrator (ch16 C13). 7 nodes, 4 conditional routes",
-   "fontSize": 24,
+   "text": "The orchestrator: plan, code, test, review, approve, apply, verify",
+   "originalText": "The orchestrator: plan, code, test, review, approve, apply, verify",
+   "fontSize": 30,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 24,
+   "baseline": 30,
    "autoResize": true,
    "containerId": null
   },
@@ -111,8 +111,8 @@
    "type": "ellipse",
    "x": 180,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "#e9ecef",
@@ -138,8 +138,8 @@
    "type": "text",
    "x": 180,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -161,12 +161,12 @@
    "locked": false,
    "text": "plan",
    "originalText": "plan",
-   "fontSize": 20,
+   "fontSize": 22,
    "fontFamily": 1,
    "textAlign": "center",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 20,
+   "baseline": 22,
    "autoResize": true,
    "containerId": null
   },
@@ -175,8 +175,8 @@
    "type": "ellipse",
    "x": 380,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "#e9ecef",
@@ -202,8 +202,8 @@
    "type": "text",
    "x": 380,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -225,12 +225,12 @@
    "locked": false,
    "text": "code",
    "originalText": "code",
-   "fontSize": 20,
+   "fontSize": 22,
    "fontFamily": 1,
    "textAlign": "center",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 20,
+   "baseline": 22,
    "autoResize": true,
    "containerId": null
   },
@@ -239,8 +239,8 @@
    "type": "ellipse",
    "x": 580,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "#e9ecef",
@@ -266,8 +266,8 @@
    "type": "text",
    "x": 580,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -289,12 +289,12 @@
    "locked": false,
    "text": "test",
    "originalText": "test",
-   "fontSize": 20,
+   "fontSize": 22,
    "fontFamily": 1,
    "textAlign": "center",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 20,
+   "baseline": 22,
    "autoResize": true,
    "containerId": null
   },
@@ -303,8 +303,8 @@
    "type": "ellipse",
    "x": 780,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "#e9ecef",
@@ -330,8 +330,8 @@
    "type": "text",
    "x": 780,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -353,12 +353,12 @@
    "locked": false,
    "text": "AI review",
    "originalText": "AI review",
-   "fontSize": 20,
+   "fontSize": 22,
    "fontFamily": 1,
    "textAlign": "center",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 20,
+   "baseline": 22,
    "autoResize": true,
    "containerId": null
   },
@@ -367,8 +367,8 @@
    "type": "ellipse",
    "x": 980,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "#ffd8a8",
@@ -394,8 +394,8 @@
    "type": "text",
    "x": 980,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -417,12 +417,12 @@
    "locked": false,
    "text": "human review",
    "originalText": "human review",
-   "fontSize": 20,
+   "fontSize": 22,
    "fontFamily": 1,
    "textAlign": "center",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 20,
+   "baseline": 22,
    "autoResize": true,
    "containerId": null
   },
@@ -431,8 +431,8 @@
    "type": "ellipse",
    "x": 1180,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "#e9ecef",
@@ -458,8 +458,8 @@
    "type": "text",
    "x": 1180,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -481,12 +481,12 @@
    "locked": false,
    "text": "apply",
    "originalText": "apply",
-   "fontSize": 20,
+   "fontSize": 22,
    "fontFamily": 1,
    "textAlign": "center",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 20,
+   "baseline": 22,
    "autoResize": true,
    "containerId": null
   },
@@ -495,8 +495,8 @@
    "type": "ellipse",
    "x": 1380,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "#e9ecef",
@@ -522,8 +522,8 @@
    "type": "text",
    "x": 1380,
    "y": 300,
-   "width": 150,
-   "height": 64,
+   "width": 160,
+   "height": 68,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -545,12 +545,12 @@
    "locked": false,
    "text": "verify",
    "originalText": "verify",
-   "fontSize": 20,
+   "fontSize": 22,
    "fontFamily": 1,
    "textAlign": "center",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 20,
+   "baseline": 22,
    "autoResize": true,
    "containerId": null
   },
@@ -690,9 +690,9 @@
    "id": "arrow-265acd54",
    "type": "arrow",
    "x": 136.0,
-   "y": 332.0,
+   "y": 332.6,
    "width": 44.0,
-   "height": 0.0,
+   "height": 0.5,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -719,7 +719,7 @@
     ],
     [
      44.0,
-     0.0
+     0.5
     ]
    ],
    "lastCommittedPoint": null,
@@ -732,9 +732,9 @@
   {
    "id": "arrow-1dccb439",
    "type": "arrow",
-   "x": 330.0,
-   "y": 332.0,
-   "width": 50.0,
+   "x": 340.0,
+   "y": 334.0,
+   "width": 40.0,
    "height": 0.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -761,7 +761,7 @@
      0.0
     ],
     [
-     50.0,
+     40.0,
      0.0
     ]
    ],
@@ -775,9 +775,9 @@
   {
    "id": "arrow-7a93dae2",
    "type": "arrow",
-   "x": 530.0,
-   "y": 332.0,
-   "width": 50.0,
+   "x": 540.0,
+   "y": 334.0,
+   "width": 40.0,
    "height": 0.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -804,7 +804,7 @@
      0.0
     ],
     [
-     50.0,
+     40.0,
      0.0
     ]
    ],
@@ -818,9 +818,9 @@
   {
    "id": "arrow-6011b725",
    "type": "arrow",
-   "x": 730.0,
-   "y": 332.0,
-   "width": 50.0,
+   "x": 740.0,
+   "y": 334.0,
+   "width": 40.0,
    "height": 0.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -847,7 +847,7 @@
      0.0
     ],
     [
-     50.0,
+     40.0,
      0.0
     ]
    ],
@@ -861,8 +861,8 @@
   {
    "id": "text-72474f02",
    "type": "text",
-   "x": 637.5,
-   "y": 380,
+   "x": 699.5,
+   "y": 286,
    "width": 85.0,
    "height": 20,
    "angle": 0,
@@ -898,9 +898,9 @@
   {
    "id": "arrow-70860b3f",
    "type": "arrow",
-   "x": 930.0,
-   "y": 332.0,
-   "width": 50.0,
+   "x": 940.0,
+   "y": 334.0,
+   "width": 40.0,
    "height": 0.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -927,7 +927,7 @@
      0.0
     ],
     [
-     50.0,
+     40.0,
      0.0
     ]
    ],
@@ -941,8 +941,8 @@
   {
    "id": "text-61d4f445",
    "type": "text",
-   "x": 846.0,
-   "y": 380,
+   "x": 856.0,
+   "y": 286,
    "width": 68.0,
    "height": 20,
    "angle": 0,
@@ -978,9 +978,9 @@
   {
    "id": "arrow-7e0b9a4d",
    "type": "arrow",
-   "x": 1130.0,
-   "y": 332.0,
-   "width": 50.0,
+   "x": 1140.0,
+   "y": 334.0,
+   "width": 40.0,
    "height": 0.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -1007,7 +1007,7 @@
      0.0
     ],
     [
-     50.0,
+     40.0,
      0.0
     ]
    ],
@@ -1021,8 +1021,8 @@
   {
    "id": "text-245fe5e8",
    "type": "text",
-   "x": 1050.0,
-   "y": 380,
+   "x": 1110.0,
+   "y": 286,
    "width": 60,
    "height": 20,
    "angle": 0,
@@ -1058,9 +1058,9 @@
   {
    "id": "arrow-525503db",
    "type": "arrow",
-   "x": 1330.0,
-   "y": 332.0,
-   "width": 50.0,
+   "x": 1340.0,
+   "y": 334.0,
+   "width": 40.0,
    "height": 0.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -1087,7 +1087,7 @@
      0.0
     ],
     [
-     50.0,
+     40.0,
      0.0
     ]
    ],
@@ -1101,10 +1101,10 @@
   {
    "id": "arrow-6994eb2f",
    "type": "arrow",
-   "x": 1530.0,
-   "y": 332.0,
-   "width": 50.0,
-   "height": 0.0,
+   "x": 1540.0,
+   "y": 333.0,
+   "width": 40.0,
+   "height": 0.5,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -1130,8 +1130,8 @@
      0.0
     ],
     [
-     50.0,
-     0.0
+     40.0,
+     -0.5
     ]
    ],
    "lastCommittedPoint": null,
@@ -1144,10 +1144,10 @@
   {
    "id": "arrow-722b2acf",
    "type": "arrow",
-   "x": 655.0,
-   "y": 364,
-   "width": 200.0,
-   "height": 76,
+   "x": 660.0,
+   "y": 368,
+   "width": 205.0,
+   "height": 72,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -1173,12 +1173,12 @@
      0
     ],
     [
-     0.0,
-     76
+     -5.0,
+     72
     ],
     [
-     -200.0,
-     76
+     -205.0,
+     72
     ],
     [
      -200.0,
@@ -1232,10 +1232,10 @@
   {
    "id": "arrow-67f6ca1e",
    "type": "arrow",
-   "x": 855.0,
-   "y": 364,
-   "width": 400.0,
-   "height": 156,
+   "x": 860.0,
+   "y": 368,
+   "width": 405.0,
+   "height": 152,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -1261,12 +1261,12 @@
      0
     ],
     [
-     0.0,
-     156
+     -5.0,
+     152
     ],
     [
-     -400.0,
-     156
+     -405.0,
+     152
     ],
     [
      -400.0,
@@ -1320,9 +1320,9 @@
   {
    "id": "arrow-408f3b0c",
    "type": "arrow",
-   "x": 1055.0,
+   "x": 1060.0,
    "y": 300,
-   "width": 600.0,
+   "width": 605.0,
    "height": 140,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -1349,11 +1349,11 @@
      0
     ],
     [
-     0.0,
+     -5.0,
      -140
     ],
     [
-     -600.0,
+     -605.0,
      -140
     ],
     [
@@ -1408,9 +1408,9 @@
   {
    "id": "arrow-69c7c623",
    "type": "arrow",
-   "x": 655.0,
+   "x": 660.0,
    "y": 300,
-   "width": 400.0,
+   "width": 405.0,
    "height": 80,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -1437,11 +1437,11 @@
      0
     ],
     [
-     0.0,
+     -5.0,
      -80
     ],
     [
-     400.0,
+     395.0,
      -80
     ],
     [
@@ -1496,10 +1496,10 @@
   {
    "id": "arrow-57691d88",
    "type": "arrow",
-   "x": 255.0,
-   "y": 364,
-   "width": 27.0,
-   "height": 196,
+   "x": 260.0,
+   "y": 368,
+   "width": 32.0,
+   "height": 192,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -1525,8 +1525,8 @@
      0
     ],
     [
-     -27.0,
-     196
+     -32.0,
+     192
     ]
    ],
    "lastCommittedPoint": null,
@@ -1577,11 +1577,11 @@
    "id": "text-3fd117c",
    "type": "text",
    "x": 40,
-   "y": 640,
-   "width": 600,
-   "height": 66,
+   "y": 650,
+   "width": 1200,
+   "height": 78,
    "angle": 0,
-   "strokeColor": "#495057",
+   "strokeColor": "#343a40",
    "backgroundColor": "transparent",
    "fillStyle": "solid",
    "strokeWidth": 2,
@@ -1599,14 +1599,14 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "Rapid-fire the routes with the room. At test, passed? AI review. Failed, attempts left? code, with the traceback.\nAt AI review, approved? human review. Rejected? code, with the feedback. At human review, approve? apply. Reject? code, with my reason.\nAfter apply? verify. After verify? END. Tests run on a snapshot copy; verify runs them on the real files.",
-   "originalText": "Rapid-fire the routes with the room. At test, passed? AI review. Failed, attempts left? code, with the traceback.\nAt AI review, approved? human review. Rejected? code, with the feedback. At human review, approve? apply. Reject? code, with my reason.\nAfter apply? verify. After verify? END. Tests run on a snapshot copy; verify runs them on the real files.",
-   "fontSize": 15,
+   "text": "Tests run on a copy of the workspace before anyone reviews. Only passing code reaches the AI reviewer, and only\nreviewed code reaches the human. A reject carries the human's reason back to the coder. Apply writes the real files;\nverify runs the tests once more on them.",
+   "originalText": "Tests run on a copy of the workspace before anyone reviews. Only passing code reaches the AI reviewer, and only\nreviewed code reaches the human. A reject carries the human's reason back to the coder. Apply writes the real files;\nverify runs the tests once more on them.",
+   "fontSize": 18,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "middle",
    "lineHeight": 1.25,
-   "baseline": 45,
+   "baseline": 54,
    "autoResize": true,
    "containerId": null
   }

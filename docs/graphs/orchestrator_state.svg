@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1390" height="602" viewBox="0 0 1390 602" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1390" height="692" viewBox="0 0 1390 692" font-family="Helvetica, Arial, sans-serif">
 <defs><marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1e1e1e"/></marker></defs>
-<rect width="1390" height="602" fill="#ffffff"/>
-<text x="40" y="44" font-size="24" fill="#1e1e1e">Beat 47: the state through one run (demo-1)</text>
+<rect width="1390" height="692" fill="#ffffff"/>
+<text x="40" y="50" font-size="30" font-weight="600" fill="#1e1e1e">The state through one run</text>
 <rect x="40" y="100" width="110" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
 <text x="95.0" y="122" font-size="15" font-weight="bold" fill="#1e1e1e" text-anchor="middle">step</text>
 <rect x="150" y="100" width="150" height="34" fill="#e8eef4" stroke="#adb5bd" stroke-width="1"/>
@@ -210,6 +210,6 @@
 <text x="1125.0" y="530" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">-</text>
 <rect x="1210" y="508" width="120" height="34" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
 <text x="1270.0" y="530" font-size="14" font-weight="normal" fill="#1e1e1e" text-anchor="middle">2 / 2</text>
-<text x="40" y="576" font-size="15" fill="#495057">Walk it slowly. The row that matters is the second 'code': v2 was written with reason_1 in the prompt.</text>
-<text x="40" y="598" font-size="15" fill="#495057">Then run ch16 N1 for the reject path: a reject with a reason sends both counters back to 0 / 0 and the new preview uses the reason.</text>
+<text x="40" y="612" font-size="19" fill="#343a40">What each field holds after each node. The second code row is the one to notice: v2 was written with the</text>
+<text x="40" y="642" font-size="19" fill="#343a40">reviewer's reason in the prompt. A human reject would send both counters back to 0 / 0.</text>
 </svg>

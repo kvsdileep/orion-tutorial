@@ -17,9 +17,9 @@ from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "docs" / "graphs"
 
-NODE_W, NODE_H = 150, 64
+NODE_W, NODE_H = 160, 68
 PILL_W, PILL_H = 96, 40
-FONT = 20
+FONT = 22
 INK = "#1e1e1e"
 NODE_FILL = "#e9ecef"
 TERMINAL_FILL = "#d0ebff"
@@ -95,10 +95,14 @@ class Table:
 
 class Drawing:
     def __init__(self, name: str, title: str, nodes: list[Node], edges: list[Edge], tables: list[Table] | None = None,
-                 notes: list[tuple[float, float, str]] | None = None):
+                 caption: str = ""):
         self.name, self.title, self.nodes, self.edges = name, title, nodes, edges
-        self.tables, self.notes = tables or [], notes or []
+        self.tables, self.caption = tables or [], caption
         self.by_name = {n.name: n for n in nodes}
+
+    @property
+    def caption_y(self) -> float:
+        return max([n.y + n.h for n in self.nodes] + [t.y + 34 * (len(t.rows) + 1) for t in self.tables] + [300]) + 50
 
     def edge_points(self, e: Edge) -> list[tuple[float, float]]:
         a, b = self.by_name[e.src], self.by_name[e.dst]
@@ -199,15 +203,15 @@ def _table_elements(t: Table) -> list[dict]:
 
 def to_excalidraw(d: Drawing) -> dict:
     els = []
-    els.append(_text(40, 20, 900, 32, d.title, size=24, align="left"))
+    els.append(_text(40, 20, 1200, 40, d.title, size=30, align="left"))
     for n in d.nodes:
         els += _node_elements(n)
     for e in d.edges:
         els += _arrow_elements(d.edge_points(e), e.label, e.dashed, e.label_at)
     for t in d.tables:
         els += _table_elements(t)
-    for x, y, text in d.notes:
-        els.append(_text(x, y, 600, 22 * (text.count("\n") + 1), text, size=15, align="left", color="#495057"))
+    if d.caption:
+        els.append(_text(40, d.caption_y, 1200, 26 * (d.caption.count("\n") + 1), d.caption, size=18, align="left", color="#343a40"))
     return {
         "type": "excalidraw", "version": 2, "source": "orion-tutorial/scripts/build_graphs.py",
         "elements": els, "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": {},
@@ -224,11 +228,11 @@ def _esc(s: str) -> str:
 def to_svg(d: Drawing) -> str:
     parts = []
     W = max([n.x + n.w for n in d.nodes] + [t.x + sum(t.col_w) for t in d.tables] + [900]) + 60
-    H = max([n.y + n.h for n in d.nodes] + [t.y + 34 * (len(t.rows) + 1) for t in d.tables] + [400]) + 60
+    H = d.caption_y + 30 * (d.caption.count("\n") + 1) + 40
     parts.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{W:.0f}" height="{H:.0f}" viewBox="0 0 {W:.0f} {H:.0f}" font-family="Helvetica, Arial, sans-serif">')
     parts.append('<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1e1e1e"/></marker></defs>')
     parts.append(f'<rect width="{W:.0f}" height="{H:.0f}" fill="#ffffff"/>')
-    parts.append(f'<text x="40" y="44" font-size="24" fill="{INK}">{_esc(d.title)}</text>')
+    parts.append(f'<text x="40" y="50" font-size="30" font-weight="600" fill="{INK}">{_esc(d.title)}</text>')
     for e in d.edges:
         pts = d.edge_points(e)
         path = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
@@ -242,15 +246,15 @@ def to_svg(d: Drawing) -> str:
             else:
                 lx, ly = e.label_at
             for i, line in enumerate(e.label.split("\n")):
-                parts.append(f'<text x="{lx:.1f}" y="{ly + i * 17:.1f}" font-size="14" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="4" paint-order="stroke">{_esc(line)}</text>')
+                parts.append(f'<text x="{lx:.1f}" y="{ly + i * 19:.1f}" font-size="16" fill="#495057" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">{_esc(line)}</text>')
     for n in d.nodes:
         if n.kind == "terminal":
             parts.append(f'<rect x="{n.x}" y="{n.y}" width="{n.w}" height="{n.h}" rx="12" fill="{TERMINAL_FILL}" stroke="{INK}" stroke-width="2"/>')
-            size = 15
+            size = 17
         else:
             fill = {"decision": DECISION_FILL, "human": HUMAN_FILL}.get(n.kind, NODE_FILL)
             parts.append(f'<ellipse cx="{n.cx}" cy="{n.cy}" rx="{n.w / 2}" ry="{n.h / 2}" fill="{fill}" stroke="{INK}" stroke-width="2"/>')
-            size = 18
+            size = 21
         lines = n.label.split("\n")
         y0 = n.cy - (len(lines) - 1) * size * 0.6
         for i, line in enumerate(lines):
@@ -268,9 +272,9 @@ def to_svg(d: Drawing) -> str:
                 parts.append(f'<text x="{x + w / 2}" y="{y + 22}" font-size="{14 if r else 15}" font-weight="{"bold" if r == 0 else "normal"}" fill="{INK}" text-anchor="middle">{_esc(cell)}</text>')
                 x += w
             y += 34
-    for x, y, text in d.notes:
-        for i, line in enumerate(text.split("\n")):
-            parts.append(f'<text x="{x}" y="{y + 16 + i * 22}" font-size="15" fill="#495057">{_esc(line)}</text>')
+    for i, line in enumerate(d.caption.split("\n")):
+        if line:
+            parts.append(f'<text x="40" y="{d.caption_y + 20 + i * 30:.0f}" font-size="19" fill="#343a40">{_esc(line)}</text>')
     parts.append("</svg>")
     return "\n".join(parts)
 
@@ -283,7 +287,7 @@ def drawings() -> list[Drawing]:
 
     # Beat 14: the first graph
     out.append(Drawing(
-        "beat14_agent_loop", "Beat 14: the agent loop (ch03 C6)",
+        "agent_loop", "The agent loop",
         nodes=[
             Node("START", 327, 80, "terminal"), Node("agent", 300, 190), Node("tools", 300, 380),
             Node("END", 600, 202, "terminal"),
@@ -294,14 +298,13 @@ def drawings() -> list[Drawing]:
             Edge("tools", "agent", "tool result", src_side="top", dst_side="bottom", src_dx=22, dst_dx=22, label_at=(470, 320)),
             Edge("agent", "END", "tool_calls empty", label_at=(530, 190)),
         ],
-        notes=[(40, 500, "Two nodes. agent runs the model with the tools bound. tools is a ToolNode that runs every\n"
-                          "tool call in the last AI message. The conditional edge is route(): tool calls, go to tools;\n"
-                          "none, we are done. Trace 'what is Python' (no tool calls) and 'list the files' (one tool call).")],
+        caption="The model decides which tool to call. The tool runs. The model sees the result and decides again,\n"
+                "until an answer comes back with no tool calls.",
     ))
 
     # Beat 27: self-correcting graph with its state table
     out.append(Drawing(
-        "beat27_self_correcting", "Beat 27: generate, execute, retry (ch09 C13)",
+        "self_correction", "Self-correction: generate, execute, retry",
         nodes=[
             Node("START", 357, 80, "terminal"), Node("generate", 330, 190), Node("execute", 330, 370),
             Node("give up", 330, 560, "decision"), Node("END", 640, 382, "terminal"),
@@ -323,14 +326,14 @@ def drawings() -> list[Drawing]:
                        ["execute", "task", "func_v2", "yes", "traceback_v2", "2"],
                        ["generate", "task", "func_v3", "yes", "-", "3"],
                        ["execute", "task", "func_v3", "yes", "- (success)", "3"]],
-                      [90, 70, 100, 60, 130, 80], title="State table: fill it row by row with the room")],
-        notes=[(40, 700, "Ask before each cell: which fields have values at START? After generate? Is error filled after\n"
-                          "generate? (No: generate cannot run code.) Does generate know the error on attempt 2? (Yes, it is in the prompt.)")],
+                      [90, 70, 100, 60, 130, 80], title="The state after each step")],
+        caption="generate writes the code. execute runs it in the sandbox. A failure goes back to generate with the error\n"
+                "in the prompt. After three failures the graph gives up and reports the last state.",
     ))
 
     # Beat 30: generate, execute, review with its state table
     out.append(Drawing(
-        "beat30_generate_execute_review", "Beat 30: generate, execute, review (ch10 C19)",
+        "self_correction_with_review", "Self-correction with a reviewer",
         nodes=[
             Node("START", 357, 80, "terminal"), Node("generate", 330, 190), Node("execute", 330, 370),
             Node("review", 330, 550), Node("END", 660, 562, "terminal"),
@@ -355,15 +358,15 @@ def drawings() -> list[Drawing]:
                        ["generate", "task", "v3", "-", "-", "3"],
                        ["execute", "task", "v3", "- (ran)", "-", "3"],
                        ["review", "task", "v3", "-", "approved", "3"]],
-                      [90, 70, 60, 120, 170, 80], title="Second state table")],
-        notes=[(40, 720, "Draw both orders for the cost argument: execute then review (reviewer runs once, on code that works)\n"
-                          "versus review then execute (reviewer runs three times, twice on code that did not). One shared attempts counter.")],
+                      [90, 70, 60, 120, 170, 80], title="The state after each step")],
+        caption="Execution proves the code runs. The reviewer judges whether it is good. Either kind of feedback, an error\n"
+                "or a rejection, goes back into the next prompt. Review runs only on code that already works.",
     ))
 
     # Beat 44: the orchestrator
     y = 300
     out.append(Drawing(
-        "beat44_orchestrator", "Beat 44: the orchestrator (ch16 C13). 7 nodes, 4 conditional routes",
+        "orchestrator", "The orchestrator: plan, code, test, review, approve, apply, verify",
         nodes=[
             Node("START", 40, y + 12, "terminal"),
             Node("plan", 180, y), Node("code", 380, y), Node("test", 580, y), Node("ai_review", 780, y, label="AI review"),
@@ -373,9 +376,9 @@ def drawings() -> list[Drawing]:
         ],
         edges=[
             Edge("START", "plan"), Edge("plan", "code"), Edge("code", "test"),
-            Edge("test", "ai_review", "tests pass", label_at=(680, 390)),
-            Edge("ai_review", "human_review", "approved", label_at=(880, 390)),
-            Edge("human_review", "apply", "approve", label_at=(1080, 390)),
+            Edge("test", "ai_review", "tests pass", label_at=(742, 296)),
+            Edge("ai_review", "human_review", "approved", label_at=(890, 296)),
+            Edge("human_review", "apply", "approve", label_at=(1140, 296)),
             Edge("apply", "verify"), Edge("verify", "END"),
             Edge("test", "code", "fail, attempts left:\nback with the traceback", dashed=True,
                  src_side="bottom", dst_side="bottom", via=[(655, 440), (455, 440)], label_at=(555, 470)),
@@ -387,14 +390,14 @@ def drawings() -> list[Drawing]:
                  src_side="top", dst_side="top", via=[(655, 220), (1055, 220)], label_at=(855, 200)),
             Edge("plan", "END2", "a planned path escapes\nthe workspace", dashed=True, src_side="bottom", dst_side="top", label_at=(120, 470)),
         ],
-        notes=[(40, 640, "Rapid-fire the routes with the room. At test, passed? AI review. Failed, attempts left? code, with the traceback.\n"
-                          "At AI review, approved? human review. Rejected? code, with the feedback. At human review, approve? apply. Reject? code, with my reason.\n"
-                          "After apply? verify. After verify? END. Tests run on a snapshot copy; verify runs them on the real files.")],
+        caption="Tests run on a copy of the workspace before anyone reviews. Only passing code reaches the AI reviewer, and only\n"
+                "reviewed code reaches the human. A reject carries the human's reason back to the coder. Apply writes the real files;\n"
+                "verify runs the tests once more on them.",
     ))
 
     # Beat 47: orchestrator state table
     out.append(Drawing(
-        "beat47_state_table", "Beat 47: the state through one run (demo-1)",
+        "orchestrator_state", "The state through one run",
         nodes=[], edges=[],
         tables=[Table(40, 100, ["step", "feature_request", "plan", "code", "test", "AI review", "human", "tests / reviews"],
                       [["START", "add a system prompt", "-", "-", "-", "-", "-", "0 / 0"],
@@ -410,26 +413,26 @@ def drawings() -> list[Drawing]:
                        ["verify", "same", "same", "on disk", "3 passed (real files)", "-", "-", "2 / 2"],
                        ["END", "same", "same", "done", "done", "-", "-", "2 / 2"]],
                       [110, 150, 190, 230, 170, 150, 170, 120])],
-        notes=[(40, 560, "Walk it slowly. The row that matters is the second 'code': v2 was written with reason_1 in the prompt.\n"
-                          "Then run ch16 N1 for the reject path: a reject with a reason sends both counters back to 0 / 0 and the new preview uses the reason.")],
+        caption="What each field holds after each node. The second code row is the one to notice: v2 was written with the\n"
+                "reviewer's reason in the prompt. A human reject would send both counters back to 0 / 0.",
     ))
 
     # Beat 48: parallel fan-out
     out.append(Drawing(
-        "beat48_parallel", "Beat 48: one coder per file with Send (ch17 C20)",
+        "parallel_coders", "Parallel coders with Send",
         nodes=[
             Node("START", 40, 262, "terminal"), Node("plan", 180, 250),
             Node("c1", 450, 90, label="code_file\nconfig.py"), Node("c2", 450, 250, label="code_file\nchat.py"), Node("c3", 450, 410, label="code_file\napp.py"),
-            Node("collect", 720, 250), Node("END", 940, 262, "terminal"),
+            Node("collect", 800, 250), Node("END", 1020, 262, "terminal"),
         ],
         edges=[
             Edge("START", "plan"),
             Edge("plan", "c1", "Send", label_at=(390, 150)), Edge("plan", "c2", "Send", label_at=(390, 268)), Edge("plan", "c3", "Send", label_at=(390, 390)),
-            Edge("c1", "collect", label_at=None), Edge("c2", "collect", "reducer: add_to_list", label_at=(660, 268)), Edge("c3", "collect"),
+            Edge("c1", "collect", label_at=None), Edge("c2", "collect", "reducer:\nadd_to_list", label_at=(700, 250)), Edge("c3", "collect"),
             Edge("collect", "END"),
         ],
-        notes=[(40, 540, "Same node, three copies, different inputs. fan_out_to_coders returns one Send per file task.\n"
-                          "The reducer on generated_code (existing + new) merges the three results. This is the only reducer of the day.")],
+        caption="One plan, then one copy of the coder per file, all running at once. Send creates the copies with different inputs;\n"
+                "the reducer on generated_code merges their results into one list.",
     ))
     return out
 
