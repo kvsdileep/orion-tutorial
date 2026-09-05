@@ -10,8 +10,6 @@ Build an AI coding agent with LangChain and LangGraph, one capability at a time:
 |---|---|
 | `src/orion_agent/` | The agent: workspace jail, sandbox, tools, rules, skills, MCP, search, and the LangGraph graphs |
 | `lessons/` | Eighteen Python files with `# %%` cells, taught live from Cursor |
-| `docs/teaching-guide.md` | The concept guide for the instructor: the layers, the lesson map, design decisions, learner questions, glossary |
-| `docs/instructor-script.md` | The beat-by-beat script: what to open, run, draw, and say, with the six drawings in `docs/graphs/` |
 | `sample_project/` | The Streamlit chatbot the agent modifies; copied into `workspace/` by `orion reset` |
 | `.cursor/rules/`, `.cursor/skills/`, `AGENTS.md`, `DESIGN.md` | The rules and skills the agent (and Cursor) read |
 | `orion-ide/` | A FastAPI + React IDE that runs the same agent |
