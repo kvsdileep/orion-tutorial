@@ -456,4 +456,4 @@ Say these out loud when they come up. Learners asked, at the end of the original
 
 ---
 
-*Companion documents: the instructor script (beats, timings, exact cells) and `lessons/README.md` (setup and rehearsal).*
+*Companion documents: [instructor-script.md](instructor-script.md) (beats, timings, exact cells, which drawing to open), [graphs/README.md](graphs/README.md) (the six drawings), and [../lessons/README.md](../lessons/README.md) (setup and rehearsal).*
