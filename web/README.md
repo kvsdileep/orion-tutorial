@@ -33,4 +33,12 @@ The site deploys from this repository on Vercel.
 | Environment variables | none |
 | Production branch | `main` |
 
-Import the repository in the Vercel dashboard (Add New Project, pick the GitHub repo, set Root Directory to `web`). Every push to `main` deploys to production; every other branch gets a preview URL. The production URL is whatever Vercel assigns to the project; record it here after the first deploy.
+Production: https://orion-tutorial-brown.vercel.app (Vercel project `orion-tutorial`, team `dileep-growthschools-projects`).
+
+The project has Root Directory `web` and the repo root is linked to it (`.vercel/`, gitignored). To deploy from this machine:
+
+```bash
+npx vercel deploy --prod --yes   # run from the repo root
+```
+
+To have every push to `main` deploy on its own, connect GitHub once in the Vercel dashboard: Project Settings, Git, Connect Git Repository, pick `kvsdileep/orion-tutorial`. That needs a GitHub login connection on the Vercel account (Account Settings, Login Connections).
