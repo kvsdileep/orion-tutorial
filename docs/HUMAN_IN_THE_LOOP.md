@@ -79,6 +79,8 @@ In the IDE a reject without a reason is refused with a 422; in the lessons `reje
 
 ## Three ways to answer
 
+None of them is the website. The curriculum site is static; a "pending" gate there is a recording. You need this repository and your key.
+
 **Raw LangGraph** (what ch16 C17 shows, so you see the mechanism):
 
 ```python

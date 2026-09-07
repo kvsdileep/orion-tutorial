@@ -32,6 +32,9 @@ That is the point of `check_task_paths` and the path check after `plan`: a path 
 
 ## The human gate
 
+**The website's playground says "human gate: pending" and nothing happens**
+The curriculum site is static and cannot run a model; anything that looks like an agent run there is a recorded transcript. Approve and reject only work in the lessons (ch16) and in the local IDE (`uv run orion ide`).
+
 **The agent paused and I closed the dialog**
 The run is still waiting. Open the Agent panel and click **Open review**. Nothing is lost until you start a new run or restart the backend.
 

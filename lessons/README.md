@@ -2,7 +2,7 @@
 
 Eighteen Python files in three folders. Each file is a chapter; each `# %%` line starts a cell. You run the cells one at a time, in order, and read the output next to the code. There are no notebooks: the same files run top to bottom as scripts too.
 
-You can also read the chapters as prose on the [reader site](https://orion-tutorial-reader.vercel.app) and see the code panels on the [editor-style site](https://orion-tutorial-brown.vercel.app). The files here are the source of both.
+You can also read the chapters as prose on the [curriculum site](https://orion-tutorial-reader.vercel.app). The files here are its source, and the only place the agent actually runs.
 
 | Lesson | Files | What it gives the agent |
 |---|---|---|

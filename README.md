@@ -4,7 +4,7 @@ Orion is a small coding agent you build one capability at a time with LangChain 
 
 You bring your own OpenRouter key. Everything else is in this repository: the agent as a Python package, eighteen lesson files you run cell by cell, a small IDE that runs the same agent with a review dialog, and the documentation to understand all of it.
 
-**Read online:** [reader site](https://orion-tutorial-reader.vercel.app) (plain chapters) · [editor-style site](https://orion-tutorial-brown.vercel.app)
+**Read online:** [the curriculum site](https://orion-tutorial-reader.vercel.app), all eighteen chapters as plain pages. To run the agent and approve its changes, use this repository.
 
 ## What the finished agent does
 
@@ -72,7 +72,7 @@ The IDE asks for your key on first load (or uses the one in `.env`), then gives 
 | `workspace/` | That copy. Gitignored; `uv run orion reset` remakes it. Everything the agent writes lands here and nowhere else. |
 | `.cursor/rules/`, `.cursor/skills/`, `AGENTS.md`, `DESIGN.md` | The rules and skills the agent reads into its prompt. Cursor reads the same files, so you and the agent follow one rulebook. |
 | `orion-ide/` | A FastAPI + React IDE that runs the package: chat, agent mode, the human gate, time travel. |
-| `web/` | The Next.js curriculum site. Static; makes no model calls. |
+| `web/` | The Next.js curriculum site. Static; makes no model calls, so nothing on it can run the agent or approve a change. |
 | `tests/` | Offline tests against a scripted stand-in for the model. |
 | `docs/` | The guides below, and the six teaching drawings as SVG. |
 

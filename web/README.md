@@ -33,7 +33,7 @@ The site deploys from this repository on Vercel.
 | Environment variables | none |
 | Production branch | `main` |
 
-Two deployments build from this folder:
+Two deployments build from this folder. **Share only the reader site with learners.** The ide-mode site's playground is a canned transcript: its human gate shows "pending" with nothing to approve, which reads as broken. The real approve flow is the local IDE in `orion-ide/`.
 
 | Site | Mode | Vercel project |
 |---|---|---|
