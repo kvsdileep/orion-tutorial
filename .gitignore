@@ -76,3 +76,7 @@ __pycache__/
 # instructor materials, local only
 instructor/
 .env.local
+
+# every env file except the template learners copy
+.env*
+!.env.example

@@ -26,6 +26,10 @@ nodes = set(agent.get_graph().nodes) - {"__start__", "__end__"}
 print(f"Agent compiled: {len(nodes)} nodes, 4 conditional routes, checkpointing enabled")
 print(sorted(nodes))
 
+# One call. The graph plans, codes, runs the tests on a *copy* of the workspace,
+# asks the AI reviewer, and then hits interrupt() in human_review_node. The call
+# returns with an \`__interrupt__\` key instead of a finished result.
+# Run this cell ONCE. Running it again starts the whole run over on the same thread.
 FEATURE = (
     "Add a system prompt feature to the chatbot. "
     "Add a DEFAULT_SYSTEM_PROMPT constant in config.py. "
@@ -46,7 +50,12 @@ print(f"Plan: {payload['plan']}")
 print(f"Review: {payload['review_result'][:200]}")
 print(f"Tests:\\n{payload['test_output'][:400]}")
 for change in payload["changes"]:
-    print(f"  {change['filepath']}: {change['explanation'][:80]}")
+    print(f"  [{change['action']}] {change['filepath']}: {change['explanation'][:80]}")
+
+# The payload carries every file in full (\`code\`) and a unified diff against the
+# file that is on disk right now (\`diff\`). Nothing has been written yet.
+for change in payload["changes"]:
+    print(change["diff"] or f"(no changes to {change['filepath']})")
 
 state = run(agent.aget_state(config))
 print(f"Agent is waiting at node: {state.next}\\n")
@@ -57,12 +66,19 @@ for item in state.values["generated_code"]:
     print(item["code"])
     print()
 
+# Command(resume=...) is LangGraph's way of answering an interrupt. The graph
+# wakes up inside human_review_node with our decision, routes to apply (writes
+# the files) and verify (runs the tests on the real workspace), then ends.
 from langgraph.types import Command
 
 result = run(agent.ainvoke(Command(resume={"decision": "approve", "feedback": ""}), config))
 print(f"Status: {result['status']}")
 print(f"\\nTest output:\\n{result['test_output']}")
 
+# A reject carries a reason. The coder gets it verbatim ("Human feedback (this
+# overrides everything else)"), both attempt counters go back to 0, and the loop
+# runs again: code, test, AI review, and back to you. This runs on a copy of the
+# workspace so the files you just approved stay as they are.
 config_b = {"configurable": {"thread_id": "demo-1b"}}
 snapshot = ws.snapshot()  # keep the approved files; this thread works on a copy
 from orion_agent.workspace import Workspace
@@ -71,14 +87,11 @@ scratch_agent = demo_orchestrator(ROOT, Workspace(snapshot))
 paused = run(scratch_agent.ainvoke({"feature_request": "Add a PAGE_SUBTITLE constant to config.py and show it under the title in app.py."}, config_b))
 print("paused with:", [c["filepath"] for c in paused["__interrupt__"][0].value["changes"]])
 
-paused_again = run(scratch_agent.ainvoke(
-    Command(resume={"decision": "reject", "feedback": "Call the constant TAGLINE, not PAGE_SUBTITLE, and keep it under 40 characters."}),
-    config_b,
-))
+paused_again = reject(scratch_agent, config_b, "Call the constant TAGLINE, not PAGE_SUBTITLE, and keep it under 40 characters.")
 state_b = run(scratch_agent.aget_state(config_b))
 print("attempt counters after the reject:", state_b.values["review_attempts"], state_b.values["test_attempts"])
 for change in paused_again["__interrupt__"][0].value["changes"]:
-    print(f"--- {change['filepath']} ---\\n{change['preview']}\\n")
+    print(f"--- {change['filepath']} ---\\n{change['diff']}\\n")
 /* lesson:end */`,
   backendFilename: "ch16_human_in_the_loop.py",
   chatConfig: {

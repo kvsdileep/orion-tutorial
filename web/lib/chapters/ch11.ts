@@ -44,6 +44,8 @@ result = skill_agent.invoke({"messages": [HumanMessage(content=(
     "and give me its steps, one line each."
 ))]})
 print_messages(result["messages"], width=300)
+
+# %%
 /* lesson:end */`,
   backendFilename: "ch11_rules_and_skills.py",
   chatConfig: {

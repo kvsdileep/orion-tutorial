@@ -34,3 +34,5 @@ print(f"\nExplanation: {result.explanation}")
 
 # %% C7 the code
 print(f"\nCode:\n{result.code}")
+
+# %%

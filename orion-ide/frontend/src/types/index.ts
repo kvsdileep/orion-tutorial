@@ -35,12 +35,29 @@ export interface AgentTask {
   status: 'pending' | 'in_progress' | 'done' | 'error';
 }
 
+export interface ReviewChange {
+  filepath: string;
+  action?: 'create' | 'modify';
+  explanation: string;
+  preview: string;
+  code?: string;
+  diff?: string;
+}
+
 export interface PendingReview {
   threadId: string;
   plan: string;
   reviewResult: string;
   testOutput: string;
-  changes: { filepath: string; explanation: string; preview: string }[];
+  changes: ReviewChange[];
+}
+
+export interface KeyCheck {
+  ok: boolean;
+  message: string;
+  label: string;
+  usage: number | null;
+  limit: number | null;
 }
 
 export interface RuleSummary {

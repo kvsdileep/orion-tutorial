@@ -44,3 +44,27 @@ def test_check_models_exit_code(monkeypatch, capsys):
 
     monkeypatch.setattr(cli, "_http_client", lambda: httpx.Client(transport=httpx.MockTransport(all_present)))
     assert cli.main(["check-models"]) == 0
+
+
+def test_doctor_reports_each_check(tmp_path, monkeypatch, capsys):
+    root = make_root(tmp_path)
+    (root / ".env").write_text("OPENROUTER_API_KEY=sk-or-test\n")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+
+    def handler(request):
+        if request.url.path.endswith("/auth/key"):
+            return httpx.Response(200, json={"data": {"label": "orion", "usage": 1.0, "limit": None}})
+        return httpx.Response(200, json={"data": [{"id": FAST}, {"id": STRONG}]})
+
+    monkeypatch.setattr(cli, "_http_client", lambda: httpx.Client(transport=httpx.MockTransport(handler)))
+    assert cli.main(["doctor"], root=root) == 0
+    out = capsys.readouterr().out
+    assert "OK" in out and "key" in out.lower() and "workspace" in out.lower()
+
+
+def test_doctor_fails_without_a_key(tmp_path, monkeypatch, capsys):
+    root = make_root(tmp_path)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr(cli, "_http_client", lambda: httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(200, json={"data": []}))))
+    assert cli.main(["doctor"], root=root) == 1
+    assert ".env" in capsys.readouterr().out

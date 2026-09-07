@@ -6,10 +6,11 @@ import ChatMessageComponent from './ChatMessage';
 
 export default function ChatPanel() {
   const {
-    apiKey, setApiKey, selectedModel, setSelectedModel, availableModels,
+    apiKey, setApiKey, serverHasKey, setKeySetupOpen, selectedModel, setSelectedModel, availableModels,
     chatMessages, addChatMessage, appendToLastMessage, clearChat,
     chatLoading, setChatLoading,
   } = useStore();
+  const hasKey = Boolean(apiKey) || serverHasKey;
 
   const [input, setInput] = useState('');
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -31,6 +32,10 @@ export default function ChatPanel() {
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed || chatLoading) return;
+    if (!hasKey) {
+      setKeySetupOpen(true);
+      return;
+    }
 
     const userMessage = { role: 'user' as const, content: trimmed };
     addChatMessage(userMessage);
@@ -133,31 +138,24 @@ export default function ChatPanel() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {!apiKey && (
-          <div className="bg-orion-bg-tertiary border border-orion-accent-blue rounded-lg p-4 space-y-3">
-            <div className="flex items-center gap-2 text-orion-accent-blue">
+        {!hasKey && (
+          <button
+            onClick={() => setKeySetupOpen(true)}
+            className="w-full text-left bg-orion-bg-tertiary border border-orion-accent-purple/60 rounded-lg p-4 space-y-2 hover:border-orion-accent-purple"
+          >
+            <div className="flex items-center gap-2 text-orion-accent-purple-hover">
               <KeyRound size={18} />
-              <span className="text-sm font-medium">API Key Required</span>
+              <span className="text-sm font-medium">Add your OpenRouter key</span>
             </div>
             <p className="text-sm text-orion-text-secondary">
-              Enter your OpenRouter API key to start chatting with Orion.
+              One key for every model. It stays in this browser and is only sent to your local backend.
             </p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                value={tempApiKey}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setTempApiKey(e.target.value)}
-                placeholder="sk-or-..."
-                className="flex-1 bg-orion-bg-input border border-orion-border rounded px-2 py-1.5 text-sm text-white placeholder:text-orion-text-muted focus:outline-none focus:ring-1 focus:ring-orion-accent-blue"
-              />
-              <button
-                onClick={handleApiKeySave}
-                className="px-3 py-1.5 bg-orion-accent-blue text-white text-sm rounded hover:opacity-90 transition-opacity"
-              >
-                Set Key
-              </button>
-            </div>
-          </div>
+          </button>
+        )}
+        {hasKey && chatMessages.length === 0 && (
+          <p className="text-xs text-orion-text-muted px-1">
+            Ask about the files in workspace/. Orion has read, write, list, grep, glob, run_python, and run_command tools.
+          </p>
         )}
 
         {chatMessages.map((msg, i) => (

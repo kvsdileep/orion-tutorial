@@ -1,4 +1,15 @@
-"""LangChain tools over a Workspace and a Sandbox."""
+"""LangChain tools over a Workspace and a Sandbox.
+
+For learners: a tool is a plain function with the `@tool` decorator. The
+decorator builds a schema from the function name, the type hints, and the
+docstring. That schema is the only thing the model ever sees; it never reads
+the body. So the docstring is prompt engineering: it is how the model chooses
+between `read_file` and `list_directory`.
+
+Every tool returns a string, including on failure ("Error: ..."), so a mistake
+comes back to the model as something it can read and react to, not an
+exception that kills the run.
+"""
 
 from __future__ import annotations
 

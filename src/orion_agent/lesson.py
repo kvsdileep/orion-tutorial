@@ -1,9 +1,20 @@
-"""Helpers shared by the lesson files: paths, a sync runner, graph display."""
+"""Helpers shared by the lesson files: paths, a sync runner, graph display, the human gate.
+
+For learners: every lesson file starts with `ROOT, ws = setup()`. That one line
+finds the repository root, loads your `.env` (with OPENROUTER_API_KEY), and
+returns the `workspace/` folder the agent is allowed to touch.
+
+The three helpers at the bottom (`pending_review`, `approve`, `reject`) are for
+the human gate in Lesson 3. They are wrappers over LangGraph's `Command(resume=...)`
+that first check the graph really is waiting for you, so a cell run twice gives a
+clear message instead of quietly re-doing the whole run.
+"""
 
 from __future__ import annotations
 
 import asyncio
 import concurrent.futures
+import importlib
 import inspect
 from pathlib import Path
 from typing import Any, Coroutine
@@ -11,6 +22,7 @@ from typing import Any, Coroutine
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage
 from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.types import Command
 
 from orion_agent.graphs.orchestrator import build_orchestrator
 from orion_agent.graphs.tool_agent import build_tool_agent
@@ -21,7 +33,20 @@ from orion_agent.skills import load_skills, make_read_skill_tool, skills_catalog
 from orion_agent.tools import make_tools
 from orion_agent.workspace import Workspace
 
-__all__ = ["Workspace", "repo_root", "setup", "run", "show", "print_messages", "print_file", "demo_orchestrator"]
+__all__ = [
+    "Workspace",
+    "repo_root",
+    "setup",
+    "fresh_llm",
+    "run",
+    "show",
+    "print_messages",
+    "print_file",
+    "demo_orchestrator",
+    "pending_review",
+    "approve",
+    "reject",
+]
 
 
 def repo_root(start: Path | None = None) -> Path:
@@ -44,7 +69,27 @@ def setup() -> tuple[Path, Workspace]:
             start = caller_file
     root = repo_root(start)
     load_dotenv(root / ".env")
+    _reload_llm()
     return root, Workspace(root / "workspace")
+
+
+def _reload_llm() -> None:
+    from orion_agent import llm as llm_mod
+
+    importlib.reload(llm_mod)
+
+
+def fresh_llm(model: str | None = None, temperature: float = 0.0):
+    """Reload orion_agent.llm and return a new OpenRouter client.
+
+    Cursor's interactive window keeps `from orion_agent.llm import get_llm`
+    bound to the function object from the first run. Without a reload, a
+    later edit to FAST never reaches an already-open kernel.
+    """
+    _reload_llm()
+    from orion_agent import llm as llm_mod
+
+    return llm_mod.get_llm(model or llm_mod.FAST, temperature=temperature)
 
 
 def run(coro: Coroutine[Any, Any, Any]) -> Any:
@@ -130,3 +175,45 @@ def demo_orchestrator(root: Path, ws: Workspace, *, with_web: bool = False):
     )
     _DEMO_CACHE[key] = agent
     return agent
+
+
+# --- the human gate ------------------------------------------------------------------------
+
+
+def pending_review(agent, config: dict) -> dict | None:
+    """Return the review payload if the graph is paused at the human gate, else None.
+
+    The payload is what `interrupt()` handed back: plan, changes (with full code
+    and a diff), test output, and the AI review. Reading it does not resume anything.
+    """
+    try:
+        snapshot = agent.get_state(config)
+    except Exception:  # noqa: BLE001 - an unknown thread has no state
+        return None
+    for task in getattr(snapshot, "tasks", ()) or ():
+        for pending in getattr(task, "interrupts", ()) or ():
+            return pending.value
+    return None
+
+
+def _resume(agent, config: dict, decision: dict) -> Any:
+    if pending_review(agent, config) is None:
+        thread = config.get("configurable", {}).get("thread_id", "?")
+        raise RuntimeError(
+            f"The agent is not waiting for a decision on thread {thread!r}. "
+            "Either it already finished (check the workspace files) or it never paused. "
+            "Run the feature request cell first, then approve or reject once."
+        )
+    return run(agent.ainvoke(Command(resume=decision), config))
+
+
+def approve(agent, config: dict) -> Any:
+    """Resume a paused run with an approval: apply the files, then verify with the tests."""
+    return _resume(agent, config, {"decision": "approve", "feedback": ""})
+
+
+def reject(agent, config: dict, reason: str) -> Any:
+    """Resume a paused run with a reject and a reason. The coder reads the reason verbatim."""
+    if not reason or not reason.strip():
+        raise ValueError("reject() needs a reason: it is what the coder reads before trying again.")
+    return _resume(agent, config, {"decision": "reject", "feedback": reason.strip()})

@@ -54,6 +54,8 @@ for step in full_agent.stream({
     elif node_name == "review":
         print(f"[review] {state.get('status', '')}: {state.get('review_feedback', '')[:150]}")
     print()
+
+# %%
 /* lesson:end */`,
   backendFilename: "reflection_graph.py",
   chatConfig: {

@@ -1,4 +1,11 @@
-"""A directory the agent may touch, and nothing outside it."""
+"""A directory the agent may touch, and nothing outside it.
+
+For learners: this is the first safety rule of a coding agent. Every path a
+tool receives goes through `Workspace.resolve`, which turns it into an absolute
+path and raises `WorkspaceError` if the result would land outside the root.
+`../secrets.txt` and `/etc/passwd` never reach the filesystem. The lessons use
+`workspace/`, a copy of `sample_project/` that `uv run orion reset` remakes.
+"""
 
 from __future__ import annotations
 

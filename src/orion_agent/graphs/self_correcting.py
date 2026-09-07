@@ -1,4 +1,18 @@
-"""Lesson 2: generate, execute, retry on error; then add a reviewer."""
+"""Lesson 2: generate, execute, retry on error; then add a reviewer.
+
+For learners: two graphs that share their nodes.
+
+`build_bugbot`:     START -> generate -> execute -> (ok? END : attempts left? generate : END)
+`build_full_agent`: the same, plus a `review` node after a clean run, whose
+                    feedback goes back into the generate prompt exactly the way
+                    the error did.
+
+The whole mechanism is one line in `_generate_prompt`: if the state carries an
+error (or a rejection), it is appended to the prompt of the node that acts.
+Attempts are counted once for the whole system, not per node, and capped,
+because a model that cannot fix something in three tries needs a person, not a
+fourth try.
+"""
 
 from __future__ import annotations
 

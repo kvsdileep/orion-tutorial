@@ -1,4 +1,17 @@
-"""The agent loop from Lesson 1: model decides, tools run, model sees the result."""
+"""The agent loop from Lesson 1: the model decides, the tools run, the model sees the result.
+
+For learners: this is the smallest graph in the repository and the shape every
+other one keeps.
+
+    START -> agent -> (tool calls?) -> tools -> agent -> ... -> END
+
+`agent` calls the model with the tools bound, so the model can answer with a
+list of tool calls instead of text. `tools` is LangGraph's prebuilt ToolNode:
+it runs every call in the last message and appends the results. `route` is the
+one conditional edge: tool calls present, go to tools; none, we are done.
+`MessagesState` is a list of messages with a reducer that appends, which is why
+each node returns only the new message and the history grows.
+"""
 
 from __future__ import annotations
 

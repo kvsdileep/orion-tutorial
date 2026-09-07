@@ -142,29 +142,7 @@ export async function runAgent(
     headers: getHeaders(),
     body: JSON.stringify({ feature_request: featureRequest, model, thread_id: threadId, api_key: apiKey })
   })
-
-  const reader = res.body?.getReader()
-  if (!reader) return
-
-  const decoder = new TextDecoder()
-  let buffer = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop() || ''
-
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const data = line.slice(6).trim()
-        if (!data || data === '[DONE]') continue
-        onEvent(JSON.parse(data))
-      }
-    }
-  }
+  await readEvents(res, onEvent)
 }
 
 export async function approveAgent(
@@ -179,21 +157,30 @@ export async function approveAgent(
     headers: getHeaders(),
     body: JSON.stringify({ thread_id: threadId, decision, feedback, api_key: apiKey })
   })
+  await readEvents(res, onEvent)
+}
 
+/** Read one SSE stream. A non-2xx response is turned into a single error event so the UI never hangs. */
+async function readEvents(res: Response, onEvent: (event: Record<string, unknown>) => void) {
+  if (!res.ok) {
+    let message = `${res.status} ${res.statusText}`
+    try {
+      const body = await res.json()
+      if (body?.detail) message = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail)
+    } catch { /* not JSON */ }
+    onEvent({ type: 'error', message })
+    return
+  }
   const reader = res.body?.getReader()
   if (!reader) return
-
   const decoder = new TextDecoder()
   let buffer = ''
-
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
-
     buffer += decoder.decode(value, { stream: true })
     const lines = buffer.split('\n')
     buffer = lines.pop() || ''
-
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = line.slice(6).trim()
@@ -202,6 +189,28 @@ export async function approveAgent(
       }
     }
   }
+}
+
+export async function fetchKeyStatus(): Promise<{ server_key: boolean }> {
+  const res = await fetch(`${API_BASE}/key/status`)
+  return res.json()
+}
+
+export async function checkKey(apiKey: string) {
+  const res = await fetch(`${API_BASE}/key/check`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ api_key: apiKey })
+  })
+  return res.json()
+}
+
+export async function fetchPending(threadId: string) {
+  const res = await fetch(`${API_BASE}/agent/pending/${encodeURIComponent(threadId)}`, { headers: getHeaders() })
+  return res.json()
+}
+
+export async function resetWorkspace() {
+  const res = await fetch(`${API_BASE}/workspace/reset`, { method: 'POST', headers: getHeaders() })
+  return res.json()
 }
 
 export async function fetchHistory(threadId: string) {

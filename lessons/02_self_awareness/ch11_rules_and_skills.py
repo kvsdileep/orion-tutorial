@@ -47,3 +47,5 @@ result = skill_agent.invoke({"messages": [HumanMessage(content=(
     "and give me its steps, one line each."
 ))]})
 print_messages(result["messages"], width=300)
+
+# %%

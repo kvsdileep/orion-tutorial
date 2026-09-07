@@ -40,3 +40,5 @@ async def stream_messages(user_message: str) -> None:
 
 
 run(stream_messages("In one sentence, what is in generated/calculator.py?"))
+
+# %%

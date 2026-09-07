@@ -1,4 +1,13 @@
-"""Lesson 3, part 9: fan out one coder per file with Send, merge with a reducer."""
+"""Lesson 3, part 9: fan out one coder per file with Send, merge with a reducer.
+
+For learners: the plan names three files and they are independent, so why code
+them one after another? `fan_out_to_coders` returns one `Send` per file task and
+LangGraph runs `code_file` once per Send at the same time. Two state shapes:
+`ParallelState` is what the system knows; `SingleFileState` is what one copy of
+the node is handed. Their outputs merge through `add_to_list`, a reducer on the
+`generated_code` field (existing + new). It is the only reducer written by hand
+in the repository; `MessagesState` in Lesson 1 was using one all along.
+"""
 
 from __future__ import annotations
 

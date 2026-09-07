@@ -89,3 +89,7 @@ class NewSkillRequest(BaseModel):
     name: str
     description: str
 
+
+
+class KeyCheckRequest(BaseModel):
+    api_key: str

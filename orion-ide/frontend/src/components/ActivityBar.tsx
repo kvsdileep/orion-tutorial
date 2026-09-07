@@ -1,4 +1,4 @@
-import { FolderTree, Bot, ScrollText, Sparkles, History, Terminal, MessageSquare } from 'lucide-react'
+import { FolderTree, Bot, ScrollText, Sparkles, History, Terminal, MessageSquare, KeyRound } from 'lucide-react'
 import useStore from '../store/useStore'
 
 const navItems = [
@@ -10,7 +10,8 @@ const navItems = [
 ] as const
 
 export default function ActivityBar() {
-  const { sidebarView, setSidebarView, toggleTerminal, toggleChatPanel, sidebarOpen, toggleSidebar } = useStore()
+  const { sidebarView, setSidebarView, toggleTerminal, toggleChatPanel, sidebarOpen, toggleSidebar, apiKey, serverHasKey, setKeySetupOpen } = useStore()
+  const keyReady = Boolean(apiKey) || serverHasKey
 
   const handleNavClick = (view: typeof navItems[number]['view']) => {
     if (sidebarView === view && sidebarOpen) {
@@ -56,6 +57,17 @@ export default function ActivityBar() {
         className="w-full flex items-center justify-center h-12 cursor-pointer text-orion-text-secondary hover:text-orion-text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orion-accent-purple"
       >
         <MessageSquare size={22} />
+      </button>
+
+      <div className="flex-1" />
+
+      <button
+        onClick={() => setKeySetupOpen(true)}
+        title={keyReady ? (apiKey ? 'OpenRouter key: yours (click to change)' : 'OpenRouter key: from .env (click to change)') : 'Add your OpenRouter key'}
+        className="relative w-full flex items-center justify-center h-12 cursor-pointer text-orion-text-secondary hover:text-orion-text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orion-accent-purple"
+      >
+        <KeyRound size={20} />
+        <span className={`absolute top-2.5 right-2.5 w-2 h-2 rounded-full ${keyReady ? 'bg-orion-accent-teal' : 'bg-orion-accent-red animate-pulse'}`} />
       </button>
     </div>
   )

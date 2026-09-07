@@ -1,38 +1,53 @@
 # Lessons
 
-Three lessons, eighteen files, run live from Cursor. Each file is a sequence of `# %%` cells. Put the cursor in a cell and press Shift+Enter to run it in the interactive window; the output appears next to the code. A file also runs top to bottom with `uv run python lessons/<lesson>/<file>.py`.
+Eighteen Python files in three folders. Each file is a chapter; each `# %%` line starts a cell. You run the cells one at a time, in order, and read the output next to the code. There are no notebooks: the same files run top to bottom as scripts too.
+
+You can also read the chapters as prose on the [reader site](https://orion-tutorial-reader.vercel.app) and see the code panels on the [editor-style site](https://orion-tutorial-brown.vercel.app). The files here are the source of both.
 
 | Lesson | Files | What it gives the agent |
 |---|---|---|
-| 1 Hands | ch01 to ch07 | Tools, the agent loop, rules, streaming, memory |
-| 2 Self-awareness | ch08 to ch12 | Structured output, sandboxed execution, retries, a reviewer, rules and skills, inline edits |
-| 3 Brain | ch13 to ch18 | Codebase search, MCP tools, a planner, a human gate, parallel coders, time travel |
+| 1 Hands | `01_hands/ch01` to `ch07` | A model, tools, the agent loop, files, rules, streaming, memory |
+| 2 Self-awareness | `02_self_awareness/ch08` to `ch12` | Typed output, a sandbox, retries on error, a reviewer, rules and skills, inline edits |
+| 3 Brain | `03_brain/ch13` to `ch18` | Codebase search, MCP tools, a planner, three specialists, the human gate, parallel coders, time travel |
 
-## Setup on the teaching machine
+[docs/EVOLUTION.md](../docs/EVOLUTION.md) says what each chapter adds to the graph, in order.
+
+## Before the first cell
 
 ```bash
 uv sync
-cp .env.example .env        # add OPENROUTER_API_KEY; PARALLEL_API_KEY is optional
-uv run orion check-models   # both model IDs must resolve on OpenRouter
+cp .env.example .env        # paste your OpenRouter key; see docs/BYOK_SETUP.md
+uv run orion doctor         # key valid, models found, workspace ready
 uv run orion reset          # copies sample_project/ into workspace/
 ```
 
-Open the repository folder in Cursor (not a subfolder). The workspace interpreter is `.venv` (Python 3.13). If Shift+Enter fails with `No module named ipykernel_launcher`, the kernel is Homebrew 3.14 — pick **Orion (Python 3.13)** from the kernel picker, or Command Palette → “Python: Select Interpreter” → `.venv/bin/python`.
+Open the repository folder in Cursor (the folder that holds `pyproject.toml`, not `lessons/`). Pick the interpreter `.venv/bin/python` (Python 3.13) if Cursor asks: Command Palette, "Python: Select Interpreter".
+
+## Running a cell
+
+Put the cursor anywhere in a cell and press **Shift+Enter**. Cursor opens an interactive window and runs that cell there; the output appears beside the code. Press Shift+Enter again to run the next cell. Variables survive between cells, so run each file from the top.
+
+To run a whole file as a script instead:
+
+```bash
+uv run python lessons/01_hands/ch03_agent_graph.py
+```
+
+Every file starts with `ROOT, ws = setup()`. That loads your `.env` and hands you the `workspace/` folder the agent may touch.
 
 ## Cell tags
 
-`# %% C3` is the third cell of the original lesson; `# %% N1` is a cell added later. The instructor script refers to these tags. A trailing `web` on a tag marks a cell whose code appears on the curriculum site.
+`# %% C3` is the third cell of the original course notebook; `# %% N1` is a cell added in this version. A trailing `web` on a tag marks a cell whose code is shown on the curriculum site. The tags are only names; they do not change what runs.
 
-## Before the session
+## Things to know
 
-1. `uv run orion reset`. The workspace must contain only `app.py`, `chat.py`, `config.py`, and `test_app.py`.
-2. Run Lesson 1 and Lesson 2 files end to end once so the outputs are cached in your head and the models are warm.
-3. Run ch16 once. It pauses; approve it. Then run ch18. Note how long each takes.
-4. `uv run orion reset` again.
-5. `uv run pytest` must be green.
+- **ch07's last cell (C18) resets the workspace.** Run it only when you want a clean copy.
+- **Lesson 3 uses the strong model and takes minutes per feature.** ch16 pauses and waits for you at C15; C17 is where you approve. Read [docs/HUMAN_IN_THE_LOOP.md](../docs/HUMAN_IN_THE_LOOP.md) first.
+- **ch16, ch17, and ch18 share one agent** when they run in the same interactive window. If you restart the kernel between them, ch18 replays the first feature on its own (cell N0).
+- **ch14 N1 needs the internet** beyond OpenRouter: it calls the Parallel Search MCP server. It works without a key.
+- **You can run the chatbot the agent edits** with `uv run streamlit run workspace/app.py` and watch each feature appear.
+- **The workspace is disposable.** `uv run orion reset` restores the original three files at any time.
 
-## During the session
+## When something breaks
 
-- ch07's last cell resets the workspace. Do not run it live.
-- ch16, ch17, and ch18 share one agent when they run in the same interactive window. If you restart the kernel between them, ch18 replays the first feature on its own (cell N0).
-- ch14 and ch16's research step call the Parallel Search MCP server. It works without a key; if the network is down, ch14 N1 is the only cell that fails.
+`uv run orion doctor`, then [docs/TROUBLESHOOTING.md](../docs/TROUBLESHOOTING.md). Terms you do not know are in [docs/GLOSSARY.md](../docs/GLOSSARY.md).

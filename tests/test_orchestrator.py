@@ -144,3 +144,74 @@ def test_rules_are_loaded_per_file(ws_dir, tmp_path):
     graph = make(ws_dir, coder, Scripted(OK), rules_root=root)
     run(graph, "x", {"configurable": {"thread_id": "t7"}})
     assert "NO SEMICOLONS" in coder.prompts[0]
+
+
+# --- the human gate: decisions and the payload it hands to the person -----------------------
+
+from orion_agent.graphs.orchestrator import normalize_decision, review_payload
+
+
+def test_normalize_decision_accepts_common_spellings():
+    assert normalize_decision("approve") == ("approve", "")
+    assert normalize_decision("Approve") == ("approve", "")
+    assert normalize_decision(" APPROVED ") == ("approve", "")
+    assert normalize_decision("yes") == ("approve", "")
+    assert normalize_decision(True) == ("approve", "")
+    assert normalize_decision({"decision": "Approve", "feedback": ""}) == ("approve", "")
+    assert normalize_decision("reject") == ("reject", "")
+    assert normalize_decision("no") == ("reject", "")
+    assert normalize_decision(False) == ("reject", "")
+    assert normalize_decision({"decision": "reject", "feedback": "rename it"}) == ("reject", "rename it")
+
+
+def test_normalize_decision_treats_free_text_as_a_reject_with_that_reason():
+    assert normalize_decision("call it TAGLINE instead") == ("reject", "call it TAGLINE instead")
+    assert normalize_decision({"decision": "revise", "feedback": "shorter"}) == ("reject", "shorter")
+    assert normalize_decision({"feedback": "shorter"}) == ("reject", "shorter")
+    assert normalize_decision(None) == ("reject", "")
+
+
+def test_capitalised_approve_applies_the_change(ws_dir):
+    graph = make(ws_dir, Scripted(GOOD), Scripted(OK))
+    config = {"configurable": {"thread_id": "t10"}}
+    run(graph, "x", config)
+    final = resume(graph, "Approve", config)
+    assert final["status"] == "done"
+    assert 'SUBTITLE = "S"' in (ws_dir / "config.py").read_text()
+
+
+def test_review_payload_carries_full_code_and_a_diff(ws_dir):
+    state = {
+        "plan": "p",
+        "generated_code": [
+            {"filepath": "config.py", "code": 'PAGE_TITLE = "T"\nSUBTITLE = "S"\n', "explanation": "added"},
+            {"filepath": "new_module.py", "code": "X = 1\n", "explanation": "new"},
+        ],
+        "test_output": "ok",
+        "review_result": "fine",
+    }
+    payload = review_payload(state, Workspace(ws_dir))
+    first, second = payload["changes"]
+    assert first["code"].endswith('SUBTITLE = "S"\n')
+    assert first["preview"] == first["code"][:500]
+    assert first["action"] == "modify"
+    assert "-PAGE_TITLE = \"My ChatBot\"" in first["diff"]
+    assert "+SUBTITLE = \"S\"" in first["diff"]
+    assert second["action"] == "create"
+    assert "+X = 1" in second["diff"]
+
+
+def test_interrupt_payload_includes_diff(ws_dir):
+    graph = make(ws_dir, Scripted(GOOD), Scripted(OK))
+    paused = run(graph, "x", {"configurable": {"thread_id": "t11"}})
+    change = paused["__interrupt__"][0].value["changes"][0]
+    assert "+SUBTITLE" in change["diff"]
+    assert change["code"] == GOOD.code
+
+
+def test_coder_prompt_asks_to_preserve_untouched_lines(ws_dir):
+    from orion_agent.graphs.orchestrator import build_code_prompt
+
+    prompt = build_code_prompt({"codebase_context": "x"}, {"filepath": "config.py", "action": "modify", "description": "add SUBTITLE"})
+    assert "Reproduce every other line exactly" in prompt
+    assert "emoji" in prompt

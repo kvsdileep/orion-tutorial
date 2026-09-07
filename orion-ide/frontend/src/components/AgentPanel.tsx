@@ -1,9 +1,16 @@
 import { useState } from 'react';
 import {
-  Play, Loader2, CheckCircle2, XCircle, Clock, AlertCircle,
+  Play, Loader2, CheckCircle2, XCircle, Clock, AlertCircle, Eye, RotateCcw, KeyRound,
 } from 'lucide-react';
 import useStore from '../store/useStore';
-import { runAgent } from '../api/client';
+import { fetchFiles, fetchPending, resetWorkspace, runAgent } from '../api/client';
+
+/**
+ * Agent mode: one feature request in, a plan, generated files, tests, an AI
+ * review, then a pause at the human gate. The events handled below are the
+ * ones routers/agent.py emits; `approval_needed` opens ReviewDialog and
+ * `paused` marks the run as waiting so the panel offers "Open review".
+ */
 
 const statusConfig: Record<string, { color: string; icon: React.ReactNode; label: string }> = {
   idle: { color: 'text-orion-text-muted', icon: <Clock size={14} />, label: 'Idle' },
@@ -27,24 +34,71 @@ const taskStatusIcon: Record<string, React.ReactNode> = {
 
 export default function AgentPanel() {
   const {
-    apiKey, selectedModel,
-    agentStatus, setAgentStatus, agentPlan, setAgentPlan,
-    agentTasks, setAgentTasks, setPendingReview,
-    setThreadId,
+    apiKey, serverHasKey, setKeySetupOpen, selectedModel,
+    agentStatus, setAgentStatus, agentError, setAgentError, agentPlan, setAgentPlan,
+    agentTasks, setAgentTasks, pendingReview, setPendingReview, setReviewHidden,
+    threadId, setThreadId,
     loadedSkills, addLoadedSkill, clearLoadedSkills, testOutput, setTestOutput,
   } = useStore();
 
   const [featureRequest, setFeatureRequest] = useState('');
-  const isRunning = !['idle', 'done', 'error'].includes(agentStatus);
+  const [resetting, setResetting] = useState(false);
+  const hasKey = Boolean(apiKey) || serverHasKey;
+  const isWaiting = agentStatus === 'waiting_approval';
+  const isRunning = !['idle', 'done', 'error', 'waiting_approval'].includes(agentStatus);
+
+  const handleOpenReview = async () => {
+    if (pendingReview) {
+      setReviewHidden(false);
+      return;
+    }
+    const data = await fetchPending(threadId);
+    if (data.waiting && data.review) {
+      setPendingReview({
+        threadId,
+        plan: data.review.plan || '',
+        reviewResult: data.review.review_result || '',
+        testOutput: data.review.test_output || '',
+        changes: data.review.changes || [],
+      });
+    } else {
+      setAgentError('This run is no longer waiting. Start a new one.');
+      setAgentStatus('idle');
+    }
+  };
+
+  const handleReset = async () => {
+    if (!window.confirm('Reset workspace/ to the original sample project? Everything the agent wrote there is discarded.')) return;
+    setResetting(true);
+    try {
+      await resetWorkspace();
+      const data = await fetchFiles();
+      useStore.getState().setFiles(Array.isArray(data) ? data : data.files || []);
+      setAgentStatus('idle');
+      setAgentPlan(null);
+      setAgentTasks([]);
+      setTestOutput(null);
+      setAgentError(null);
+    } finally {
+      setResetting(false);
+    }
+  };
 
   const handleRun = () => {
-    if (!featureRequest.trim() || !apiKey) return;
+    if (!featureRequest.trim()) return;
+    if (!hasKey) {
+      setKeySetupOpen(true);
+      return;
+    }
+    if (isWaiting && !window.confirm('A run is still waiting for your review. Start a new one and drop it?')) return;
 
     const newThreadId = `thread_${Date.now()}`;
     setThreadId(newThreadId);
     setAgentStatus('planning');
+    setAgentError(null);
     setAgentPlan(null);
     setAgentTasks([]);
+    setPendingReview(null);
     clearLoadedSkills();
     setTestOutput(null);
 
@@ -89,7 +143,11 @@ export default function AgentPanel() {
           });
           setAgentStatus('waiting_approval');
           break;
+        case 'paused':
+          setAgentStatus('waiting_approval');
+          break;
         case 'error':
+          setAgentError(event.message || 'Something went wrong.');
           setAgentStatus('error');
           break;
       }
@@ -105,7 +163,25 @@ export default function AgentPanel() {
         <span className="text-xs font-semibold tracking-widest text-orion-text-secondary uppercase">
           Agent Mode
         </span>
+        <button
+          onClick={handleReset}
+          disabled={resetting || isRunning}
+          title="Restore workspace/ from sample_project/ (same as `uv run orion reset`)"
+          className="flex items-center gap-1 text-[11px] text-orion-text-secondary hover:text-orion-text-primary disabled:opacity-40"
+        >
+          <RotateCcw size={12} className={resetting ? 'animate-spin' : ''} /> Reset workspace
+        </button>
       </div>
+
+      {!hasKey && (
+        <button
+          onClick={() => setKeySetupOpen(true)}
+          className="w-full flex items-center gap-2 text-left text-xs bg-orion-accent-soft border border-orion-border rounded-md px-3 py-2 text-orion-text-primary hover:border-orion-accent-purple"
+        >
+          <KeyRound size={14} className="text-orion-accent-purple shrink-0" />
+          Add your OpenRouter key to run the agent
+        </button>
+      )}
 
       {/* Feature Request */}
       <div className="space-y-2">
@@ -118,7 +194,7 @@ export default function AgentPanel() {
         />
         <button
           onClick={handleRun}
-          disabled={isRunning || !apiKey || !featureRequest.trim()}
+          disabled={isRunning || !featureRequest.trim()}
           className="w-full h-10 flex items-center justify-center gap-2 bg-orion-accent-purple text-orion-text-primary hover:bg-orion-accent-purple-hover rounded-lg text-sm font-medium transition-opacity disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-orion-accent-purple focus:ring-offset-2 focus:ring-offset-orion-bg-secondary"
         >
           {isRunning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
@@ -131,6 +207,21 @@ export default function AgentPanel() {
         {status.icon}
         <span>{status.label}</span>
       </div>
+
+      {isWaiting && (
+        <button
+          onClick={handleOpenReview}
+          className="w-full h-9 flex items-center justify-center gap-2 rounded-md text-sm font-medium border border-orion-accent-amber/60 text-orion-accent-amber hover:bg-orion-bg-tertiary"
+        >
+          <Eye size={14} /> Open review
+        </button>
+      )}
+
+      {agentError && (
+        <div className="bg-orion-bg-tertiary border border-orion-accent-red/50 rounded-md p-3 text-xs text-orion-text-primary whitespace-pre-wrap">
+          {agentError}
+        </div>
+      )}
 
       {loadedSkills.length > 0 && (
         <div className="bg-orion-accent-soft border border-orion-border rounded-md p-3">

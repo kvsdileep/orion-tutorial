@@ -1,13 +1,35 @@
 """Lesson 3: plan, code, test, AI review, human review, apply, verify.
 
+This is the finished Orion agent. Read it top to bottom once, then keep the
+drawing in docs/ARCHITECTURE.md next to you:
+
+    START -> plan -> code -> test -> ai_review -> human_review -> apply -> verify -> END
+
+Every arrow that is not straight is a *conditional edge*: a small function
+that looks at the state and picks the next node. The routes are:
+
+- after `plan`:         a planned path that escapes the workspace ends the run
+- after `test`:         passed -> ai_review; failed with attempts left -> code;
+                        failed at the cap -> human_review (so a person sees the failures)
+- after `ai_review`:    approved -> human_review; rejected -> code (auto-approve after two rejections)
+- after `human_review`: approve -> apply; reject (with a reason) -> code, both counters reset
+
 Tests are the primary check. The AI reviewer sees the code and the test
 output with fresh context and gives a second opinion. The human sees both
 and decides. A reject carries a reason back to the coder and resets the
 counters so the reviewer is consulted again.
+
+The human gate is `interrupt()` in `human_review_node`. It freezes the graph
+(the checkpointer has saved the state) and hands the caller a payload built
+by `review_payload`: the plan, every file in full, a unified diff against
+what is on disk, the test output, and the reviewer's verdict. The caller
+resumes with `Command(resume=...)`; `normalize_decision` turns whatever
+they sent into ("approve", "") or ("reject", reason).
 """
 
 from __future__ import annotations
 
+import difflib
 import shutil
 import sys
 from pathlib import Path
@@ -77,7 +99,9 @@ def build_code_prompt(state: dict, task: dict, rules_root: str | Path | None = N
     """Build the coder prompt for one file task, folding in rules and the latest feedback."""
     parts = [
         "Generate the complete Python code for this file.\n\n"
-        f"File: {task['filepath']}\nAction: {task['action']}\nDescription: {task['description']}"
+        f"File: {task['filepath']}\nAction: {task['action']}\nDescription: {task['description']}\n\n"
+        "Change only what the description asks for. Reproduce every other line exactly as it is, "
+        "including non-ASCII characters such as emoji; never replace them with escape sequences."
     ]
     if rules_root:
         rules = load_rules(rules_root, task["filepath"])
@@ -106,6 +130,77 @@ def build_review_prompt(state: dict) -> str:
         f"Test output:\n{state.get('test_output', '')}\n\n"
         "Approve only if the code is correct, complete, and follows PEP 8 with type hints and docstrings."
     )
+
+
+_APPROVE_WORDS = {"approve", "approved", "accept", "accepted", "yes", "y", "ok", "okay", "apply", "true"}
+_REJECT_WORDS = {"reject", "rejected", "no", "n", "revise", "redo", "false"}
+
+
+def normalize_decision(decision) -> tuple[str, str]:
+    """Turn whatever the human sent back into ("approve", "") or ("reject", reason).
+
+    Accepted shapes, so a learner cannot get stuck on spelling:
+
+    - a dict: {"decision": "approve" | "reject", "feedback": "..."}
+    - a bare string: "approve", "yes", "ok", "reject", "no"; any other text is a reject
+      with that text as the reason
+    - a bool: True approves, False rejects
+    - None or an empty value: reject with no reason
+    """
+    feedback = ""
+    if isinstance(decision, dict):
+        feedback = str(decision.get("feedback") or "").strip()
+        decision = decision.get("decision", "")
+    if isinstance(decision, bool):
+        return ("approve", "") if decision else ("reject", feedback)
+    text = str(decision or "").strip()
+    word = text.lower().rstrip(".!")
+    if word in _APPROVE_WORDS:
+        return "approve", ""
+    if word in _REJECT_WORDS or not word:
+        return "reject", feedback
+    # Free text such as "call it TAGLINE" reads as a reject with that reason.
+    return "reject", feedback or text
+
+
+def unified_diff(before: str, after: str, filepath: str) -> str:
+    """Render a unified diff between what is on disk and what the agent proposes."""
+    lines = difflib.unified_diff(
+        before.splitlines(keepends=True),
+        after.splitlines(keepends=True),
+        fromfile=f"a/{filepath}",
+        tofile=f"b/{filepath}",
+    )
+    return "".join(lines)
+
+
+def review_payload(state: dict, ws: Workspace, preview_chars: int = 500) -> dict:
+    """Build what the human sees at the gate: plan, files in full, diffs, tests, AI review."""
+    changes = []
+    for item in state.get("generated_code", []):
+        filepath = item["filepath"]
+        try:
+            before = ws.read(filepath)
+            action = "modify"
+        except (FileNotFoundError, WorkspaceError, OSError, UnicodeError):
+            before = ""
+            action = "create"
+        changes.append(
+            {
+                "filepath": filepath,
+                "action": action,
+                "explanation": item.get("explanation", ""),
+                "code": item["code"],
+                "preview": item["code"][:preview_chars],
+                "diff": unified_diff(before, item["code"], filepath),
+            }
+        )
+    return {
+        "plan": state.get("plan", ""),
+        "changes": changes,
+        "test_output": state.get("test_output", ""),
+        "review_result": state.get("review_result", ""),
+    }
 
 
 def run_tests(ws: Workspace, sandbox: Sandbox, changed: list[str]) -> tuple[str, bool]:
@@ -216,23 +311,15 @@ def build_orchestrator(
         return "human_review" if state["status"] == "approved" else "code"
 
     def human_review_node(state: OrchestratorState) -> dict:
-        payload = {
-            "plan": state.get("plan", ""),
-            "changes": [
-                {"filepath": g["filepath"], "explanation": g["explanation"], "preview": g["code"][:500]}
-                for g in state.get("generated_code", [])
-            ],
-            "test_output": state.get("test_output", ""),
-            "review_result": state.get("review_result", ""),
-        }
-        decision = interrupt(payload)
-        if isinstance(decision, str):
-            decision = {"decision": decision, "feedback": ""}
-        if decision.get("decision") == "approve":
-            return {"human_decision": "approve", "status": "human_approved"}
+        # interrupt() stops the run here. The state is already checkpointed, so the
+        # caller can come back minutes later with Command(resume=...) and this node
+        # runs again from the top with `decision` filled in.
+        decision, feedback = normalize_decision(interrupt(review_payload(state, ws)))
+        if decision == "approve":
+            return {"human_decision": "approve", "human_feedback": "", "status": "human_approved"}
         return {
             "human_decision": "reject",
-            "human_feedback": decision.get("feedback", ""),
+            "human_feedback": feedback,
             "review_attempts": 0,
             "test_attempts": 0,
             "status": "human_rejected",

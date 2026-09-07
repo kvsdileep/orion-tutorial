@@ -24,6 +24,8 @@ from orion_agent.llm import FAST, get_llm
 
 llm = get_llm(FAST)
 print(llm.invoke("Say hello in one sentence.").content)
+
+# %%
 /* lesson:end */`,
   chatConfig: {
     mode: "model-picker",

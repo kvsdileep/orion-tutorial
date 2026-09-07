@@ -1,9 +1,38 @@
 import { create } from 'zustand'
 import { FileNode, OpenFile, ChatMessage, AgentTask, PendingReview, Checkpoint, ModelInfo } from '../types'
 
+// The key lives in the browser only. With "remember" on it is kept in
+// localStorage so a page reload does not ask again; it is never written to disk
+// by the backend.
+const KEY_STORAGE = 'orion.apiKey'
+
+function loadStoredKey(): string {
+  try {
+    return localStorage.getItem(KEY_STORAGE) || ''
+  } catch {
+    return ''
+  }
+}
+
+function storeKey(key: string, remember: boolean) {
+  try {
+    if (remember && key) localStorage.setItem(KEY_STORAGE, key)
+    else localStorage.removeItem(KEY_STORAGE)
+  } catch {
+    /* private mode or storage disabled: the key still works for this tab */
+  }
+}
+
 interface AppState {
   apiKey: string
-  setApiKey: (key: string) => void
+  setApiKey: (key: string, remember?: boolean) => void
+  rememberKey: boolean
+  serverHasKey: boolean
+  setServerHasKey: (has: boolean) => void
+  keyLabel: string
+  setKeyLabel: (label: string) => void
+  keySetupOpen: boolean
+  setKeySetupOpen: (open: boolean) => void
   selectedModel: string
   setSelectedModel: (model: string) => void
   availableModels: ModelInfo[]
@@ -38,12 +67,16 @@ interface AppState {
 
   agentStatus: 'idle' | 'planning' | 'coding' | 'reviewing' | 'waiting_approval' | 'applying' | 'testing' | 'verifying' | 'done' | 'error'
   setAgentStatus: (status: AppState['agentStatus']) => void
+  agentError: string | null
+  setAgentError: (message: string | null) => void
   agentPlan: string | null
   setAgentPlan: (plan: string | null) => void
   agentTasks: AgentTask[]
   setAgentTasks: (tasks: AgentTask[] | ((prev: AgentTask[]) => AgentTask[])) => void
   pendingReview: PendingReview | null
   setPendingReview: (review: PendingReview | null) => void
+  reviewHidden: boolean
+  setReviewHidden: (hidden: boolean) => void
   threadId: string
   setThreadId: (id: string) => void
 
@@ -70,10 +103,34 @@ function getLanguageFromPath(path: string): string {
   return map[ext || ''] || 'plaintext'
 }
 
+const storedKey = loadStoredKey()
+
+// The thread id survives a page reload (sessionStorage) so a run that is paused
+// at the human gate can be picked up again instead of being orphaned.
+const THREAD_STORAGE = 'orion.threadId'
+
+function loadThreadId(): string {
+  try {
+    return sessionStorage.getItem(THREAD_STORAGE) || `thread-${Date.now()}`
+  } catch {
+    return `thread-${Date.now()}`
+  }
+}
+
 const useStore = create<AppState>((set, get) => ({
-  apiKey: '',
-  setApiKey: (key) => set({ apiKey: key }),
-  selectedModel: 'openai/gpt-4o-mini',
+  apiKey: storedKey,
+  rememberKey: Boolean(storedKey),
+  setApiKey: (key, remember = get().rememberKey) => {
+    storeKey(key, remember)
+    set({ apiKey: key, rememberKey: remember })
+  },
+  serverHasKey: false,
+  setServerHasKey: (has) => set({ serverHasKey: has }),
+  keyLabel: '',
+  setKeyLabel: (label) => set({ keyLabel: label }),
+  keySetupOpen: false,
+  setKeySetupOpen: (open) => set({ keySetupOpen: open }),
+  selectedModel: 'openai/gpt-4.1-mini',
   setSelectedModel: (model) => set({ selectedModel: model }),
   availableModels: [],
   setAvailableModels: (models) => set({ availableModels: models }),
@@ -144,6 +201,8 @@ const useStore = create<AppState>((set, get) => ({
 
   agentStatus: 'idle',
   setAgentStatus: (status) => set({ agentStatus: status }),
+  agentError: null,
+  setAgentError: (message) => set({ agentError: message }),
   agentPlan: '',
   setAgentPlan: (plan) => set({ agentPlan: plan }),
   agentTasks: [],
@@ -155,9 +214,14 @@ const useStore = create<AppState>((set, get) => ({
     }
   },
   pendingReview: null,
-  setPendingReview: (review) => set({ pendingReview: review }),
-  threadId: `thread-${Date.now()}`,
-  setThreadId: (id) => set({ threadId: id }),
+  setPendingReview: (review) => set({ pendingReview: review, reviewHidden: false }),
+  reviewHidden: false,
+  setReviewHidden: (hidden) => set({ reviewHidden: hidden }),
+  threadId: loadThreadId(),
+  setThreadId: (id) => {
+    try { sessionStorage.setItem(THREAD_STORAGE, id) } catch { /* ignore */ }
+    set({ threadId: id })
+  },
 
   checkpoints: [],
   setCheckpoints: (checkpoints) => set({ checkpoints }),

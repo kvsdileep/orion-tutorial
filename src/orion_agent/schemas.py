@@ -1,4 +1,11 @@
-"""Pydantic schemas shared by the graphs."""
+"""Pydantic schemas shared by the graphs.
+
+For learners: a model returns text. A program wants fields. Wrapping a model
+with `structured(llm, CodeOutput)` makes every reply an instance of one of these
+classes, validated, so `.code` is code and `.explanation` is prose and nothing
+has to be parsed out of a markdown fence. The `description` on each field is
+sent to the model as part of the schema, so write it for the model.
+"""
 
 from __future__ import annotations
 

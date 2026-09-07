@@ -63,6 +63,8 @@ for step in bugbot.stream(inputs):
         else:
             print(f"[execute] SUCCESS: {state['execution_result'][:100]}")
     print()
+
+# %%
 /* lesson:end */`,
   backendFilename: "ch09_self_correction.py",
   chatConfig: {

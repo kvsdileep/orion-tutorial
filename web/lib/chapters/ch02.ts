@@ -23,6 +23,8 @@ for t in tools:
 
 # Open src/orion_agent/tools.py to read the three functions. Every path is resolved
 # against workspace/ and an escape comes back as an "Error: ..." string.
+
+# %%
 /* lesson:end */`,
   chatConfig: {
     mode: "tool-toggles",

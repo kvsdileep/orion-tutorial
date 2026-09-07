@@ -24,6 +24,7 @@ dev = [
   "pytest>=9",
   "ipykernel>=7",
   "numpy>=2.5.2",
+  "streamlit>=1.40",
 ]
 ide = [
   "fastapi>=0.115",

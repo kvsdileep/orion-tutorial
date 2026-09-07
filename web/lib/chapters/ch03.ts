@@ -13,6 +13,8 @@ export const ch03: ChapterDef = {
   takeaway: "The agent graph pattern — model node → should_continue → tool node → loop back — is the fundamental architecture of every LangGraph agent. Master this and everything else is an extension.",
   backendFilename: "agent_graph.py",
   backendCode: `/* lesson:begin */
+# bind_tools hands the model the *schemas* (name, arguments, docstring) of the tools.
+# Watch: the answer is empty and tool_calls is filled. The model decided; nothing ran.
 llm_with_tools = llm.bind_tools(tools)
 response = llm_with_tools.invoke("What files are in the current directory?")
 print("Content:", response.content)

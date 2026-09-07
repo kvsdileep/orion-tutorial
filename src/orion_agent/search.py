@@ -1,4 +1,12 @@
-"""Agentic codebase search: grep, rank, read. No index, no embeddings."""
+"""Agentic codebase search: grep, rank, read. No index, no embeddings.
+
+For learners: before an agent changes a codebase it has to find the relevant
+code. Older tools built an embedding index. Shipped coding agents (Claude Code,
+Codex, Cursor's current agent) give the model grep, glob, and read and let it
+search the way a developer does, refining the query when the first one misses.
+`search_codebase` is the automatic version of that; `repo_map` is the one-line-
+per-file overview the planner gets before it plans.
+"""
 
 from __future__ import annotations
 

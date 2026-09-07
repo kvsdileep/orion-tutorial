@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
 import useStore from '../store/useStore'
-import { fetchFiles, fetchModels } from '../api/client'
+import { fetchFiles, fetchKeyStatus, fetchModels, fetchPending } from '../api/client'
 import ActivityBar from './ActivityBar'
 import FileExplorer from './FileExplorer'
 import AgentPanel from './AgentPanel'
@@ -13,6 +13,7 @@ import CodeEditor from './CodeEditor'
 import ChatPanel from './ChatPanel'
 import Terminal from './Terminal'
 import ReviewDialog from './ReviewDialog'
+import KeySetup from './KeySetup'
 
 function SidebarContent() {
   const { sidebarView } = useStore()
@@ -42,6 +43,36 @@ export default function Layout() {
         useStore.getState().setAvailableModels(models)
       })
       .catch(() => {})
+
+    // A run paused at the human gate survives a reload: ask the backend about it.
+    const { threadId } = useStore.getState()
+    fetchPending(threadId)
+      .then((data) => {
+        if (!data.waiting || !data.review) return
+        const store = useStore.getState()
+        store.setPendingReview({
+          threadId,
+          plan: data.review.plan || '',
+          reviewResult: data.review.review_result || '',
+          testOutput: data.review.test_output || '',
+          changes: data.review.changes || [],
+        })
+        store.setAgentPlan(data.review.plan || '')
+        store.setAgentStatus('waiting_approval')
+        store.setSidebarView('agent')
+      })
+      .catch(() => {})
+
+    // Bring your own key: open the setup screen when neither side has one.
+    fetchKeyStatus()
+      .then((data) => {
+        const { setServerHasKey, apiKey, setKeySetupOpen } = useStore.getState()
+        setServerHasKey(Boolean(data.server_key))
+        if (!apiKey && !data.server_key) setKeySetupOpen(true)
+      })
+      .catch(() => {
+        if (!useStore.getState().apiKey) useStore.getState().setKeySetupOpen(true)
+      })
   }, [])
 
   return (
@@ -88,6 +119,7 @@ export default function Layout() {
       </PanelGroup>
 
       <ReviewDialog />
+      <KeySetup />
     </div>
   )
 }

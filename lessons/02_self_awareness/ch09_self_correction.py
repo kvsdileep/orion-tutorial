@@ -89,3 +89,5 @@ for step in bugbot.stream(inputs):
         else:
             print(f"[execute] SUCCESS: {state['execution_result'][:100]}")
     print()
+
+# %%

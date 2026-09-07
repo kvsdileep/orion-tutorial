@@ -1,10 +1,11 @@
 import json
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, HTTPException
 from starlette.responses import StreamingResponse
 
 from config import DEFAULT_MODEL, OPENROUTER_API_KEY
 from models.schemas import ChatRequest
+from routers.agent import NO_KEY
 
 router = APIRouter(tags=["chat"])
 
@@ -14,7 +15,9 @@ async def chat(
     request: ChatRequest,
     x_api_key: str | None = Header(None),
 ):
-    api_key = request.api_key or x_api_key or OPENROUTER_API_KEY
+    api_key = (request.api_key or x_api_key or OPENROUTER_API_KEY or "").strip()
+    if not api_key:
+        raise HTTPException(status_code=401, detail=NO_KEY)
     model = request.model or DEFAULT_MODEL
 
     from agent.chat_graph import create_chat_graph
